@@ -1,5 +1,10 @@
+@font-face {
+  font-family: "fantasy";
+  src: url("../fonts/zh-cn.ttf");
+}
+
 body {
-  font-family: "Arial", sans-serif;
+  font-family: "fantasy";
   background-image: url("../img/background_login.jpg");
   background-repeat: no-repeat;
   background-size: cover;
@@ -19,9 +24,16 @@ body {
   text-align: center;
 }
 
+.logo {
+  display: block;
+  margin: 0 auto -20px;
+  max-width: 40%;
+  height: auto;
+}
+
 h2 {
   margin-bottom: 20px;
-  color: #00796b;
+  color: black;
 }
 
 input[type="email"],
@@ -29,29 +41,30 @@ input[type="password"] {
   width: 92%;
   padding: 10px;
   margin: 10px 0;
-  border: 1px solid #00796b;
+  border: 1px solid #1072d4;
   border-radius: 5px;
 }
 
 button {
-  background-color: #00796b;
+  background-color: #1072d4;
+  font-family: "fantasy";
   color: white;
   border: none;
   padding: 10px;
-  border-radius: 5px;
+  border-radius: 50px;
   cursor: pointer;
   width: 100%;
 }
 
 button:hover {
-  background-color: #004d40;
+  background-color: #00468b;
 }
 
 .login-link {
   margin-top: 15px;
   font-size: 0.9em;
   display: block;
-  color: #00796b;
+  color: #1072d4;
   text-decoration: none;
 }
 
@@ -66,7 +79,7 @@ button:hover {
 
 .register-button {
   background-color: #e0e0e0;
-  color: #00796b;
+  color: #1072d4;
   border: none;
   padding: 10px;
   border-radius: 5px;

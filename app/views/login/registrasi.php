@@ -17,12 +17,14 @@ if (isset($_GET['success'])) {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="../../../public/assets/css/style_registrasi.css" />
-    <title>Registrasi - Mizupix</title>
+    <link rel="icon" href="../../../public/assets/img/logo.png" type="image/x-icon">
+    <title>Registrasi - MizuPix</title>
 </head>
 
 <body>
     <div class="register-container">
-        <h2>Wellcome to Mizupix</h2>
+        <img src="../../../public/assets/img/logo.png" alt="Logo Mizupix" class="logo">
+        <h2>Wellcome to MizuPix</h2>
         <?php if (isset($error)): ?>
             <div class="message error"><?php echo htmlspecialchars($error); ?></div>
         <?php endif; ?>

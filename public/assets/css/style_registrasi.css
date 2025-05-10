@@ -1,0 +1,76 @@
+body {
+  font-family: "Arial", sans-serif;
+  background-image: url("../img/background_login.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.register-container {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  width: 320px;
+  text-align: center;
+}
+
+h2 {
+  margin-bottom: 20px;
+  color: #00796b;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"] {
+  width: 92%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #00796b;
+  border-radius: 5px;
+  font-size: 1em;
+}
+
+button {
+  background-color: #00796b;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 1em;
+}
+
+button:hover {
+  background-color: #004d40;
+}
+
+.message {
+  margin: 10px 0;
+  font-size: 0.9em;
+}
+
+.error {
+  color: red;
+}
+
+.success {
+  color: green;
+}
+
+.login-link {
+  margin-top: 15px;
+  font-size: 0.9em;
+  display: block;
+  color: #00796b;
+  text-decoration: none;
+}
+
+.login-link:hover {
+  text-decoration: underline;
+}

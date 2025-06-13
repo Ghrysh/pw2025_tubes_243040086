@@ -1,4 +1,5 @@
 <?php
+// [SESSION DAN KONEKSI DATABASE]
 session_start();
 require_once '../../../config/inc_koneksi.php';
 
@@ -8,6 +9,7 @@ if (!isset($_SESSION['id'])) {
 }
 $currentUserId = (int)$_SESSION['id'];
 
+// [FUNGSI: Ambil Data User]
 function getUser($userId, $koneksi)
 {
     $stmt = mysqli_prepare($koneksi, "SELECT username FROM login WHERE id = ?");
@@ -17,6 +19,7 @@ function getUser($userId, $koneksi)
     return mysqli_fetch_assoc($result);
 }
 
+// [FUNGSI: Ambil Profil User]
 function getProfilUser($userId, $koneksi)
 {
     $stmt = mysqli_prepare($koneksi, "SELECT nama_lengkap, tentang, situs_web, foto FROM user_profiles WHERE user_id = ?");
@@ -26,6 +29,7 @@ function getProfilUser($userId, $koneksi)
     return mysqli_fetch_assoc($result);
 }
 
+// [FUNGSI: Ambil Postingan User]
 function getUserPosts($userId, $koneksi)
 {
     $stmt = mysqli_prepare($koneksi, "SELECT id, image_path, title FROM images WHERE user_id = ? ORDER BY uploaded_at DESC");
@@ -34,6 +38,7 @@ function getUserPosts($userId, $koneksi)
     return mysqli_stmt_get_result($stmt);
 }
 
+// [FUNGSI: Hitung Followers & Following]
 function getFollowCounts($userId, $koneksi)
 {
     $counts = ['followers' => 0, 'following' => 0];
@@ -51,6 +56,7 @@ function getFollowCounts($userId, $koneksi)
     return $counts;
 }
 
+// [AMBIL DATA USER, PROFIL, POST, DAN FOLLOW]
 $user = getUser($currentUserId, $koneksi);
 $profil = getProfilUser($currentUserId, $koneksi);
 $posts_result = getUserPosts($currentUserId, $koneksi);
@@ -64,6 +70,7 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
 <html lang="id">
 
 <head>
+    <!-- [HEADER DAN LINK CSS] -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Profil Saya - MizuPix</title>
@@ -78,9 +85,11 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
 
 <body>
     <?php
+    // [INCLUDE NAVBAR]
     include('../navbar/navbar.php');
     ?>
 
+    <!-- [FAB SPEED DIAL] -->
     <div class="fab-container">
         <div class="fab-actions">
             <button class="fab-action-btn" id="serviceCenterBtn" title="Pusat Layanan"><i class='bx bx-message-rounded-dots'></i></button>
@@ -89,6 +98,7 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
         <button class="fab-main" id="fabMainBtn" title="Menu Aksi"><i class='bx bx-plus'></i></button>
     </div>
 
+    <!-- [MODAL PUSAT LAYANAN] -->
     <div id="serviceModal" class="modal">
         <div class="modal-content">
             <button class="modal-close" id="closeServiceModal">&times;</button>
@@ -102,6 +112,7 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
         </div>
     </div>
 
+    <!-- [KONTEN UTAMA PROFIL USER] -->
     <main class="main-container">
         <div class="profile-card">
             <div class="profile-header">
@@ -133,10 +144,12 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
             </div>
         </div>
 
+        <!-- [TAB KARYA SAYA] -->
         <div class="content-tabs">
             <button class="tab-btn active">Karya Saya (<?php echo $post_count; ?>)</button>
         </div>
 
+        <!-- [GALERI GAMBAR USER] -->
         <div class="image-gallery">
             <?php if ($post_count > 0): ?>
                 <?php mysqli_data_seek($posts_result, 0); ?>
@@ -154,6 +167,7 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
     </main>
 
     <script>
+        // [SCRIPT: LOGIKA INTERAKSI HALAMAN PROFIL]
         document.addEventListener('DOMContentLoaded', function() {
             const profileBtn = document.querySelector('.profile-btn');
             const profileDropdown = document.getElementById('profile-menu');
@@ -167,7 +181,7 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
             const closeServiceModal = document.getElementById('closeServiceModal');
             let searchTimeout = null;
 
-            // Dropdown profil
+            // [DROPDOWN PROFIL]
             if (profileBtn) {
                 profileBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -175,7 +189,7 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
                 });
             }
 
-            // FAB Speed Dial
+            // [FAB SPEED DIAL]
             if (fabMainBtn) {
                 fabMainBtn.addEventListener('click', () => {
                     fabActions.classList.toggle('open');
@@ -183,7 +197,7 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
                 });
             }
 
-            // Modal Pusat Layanan
+            // [MODAL PUSAT LAYANAN]
             if (serviceCenterBtn) {
                 serviceCenterBtn.addEventListener('click', () => {
                     serviceModal.classList.add('show');
@@ -195,8 +209,7 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
                 });
             }
 
-
-            // --- [DIPERBAIKI] Search Logic ---
+            // [LOGIKA SUGGESTION SEARCH]
             const renderSuggestions = (data, container) => {
                 if (!container) return;
                 let html = '';
@@ -217,7 +230,6 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
                     data.categories.forEach(s => html += createSuggestionItem(s, 'category'));
                     html += '</div>';
                 }
-                // ... (bisa ditambahkan grup lain seperti user atau kategori jika perlu)
                 container.innerHTML = html;
                 container.style.display = html ? 'block' : 'none';
             };
@@ -227,30 +239,26 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
                     container.style.display = 'none';
                     return;
                 }
-                // Pastikan Anda membuat file get_search_suggestions.php di path yang benar
                 fetch(`/Gallery_Seni_Online/app/views/user/get_search_suggestions.php?term=${encodeURIComponent(term)}`)
                     .then(res => res.json())
                     .then(data => renderSuggestions(data, container))
                     .catch(err => console.error("Fetch suggestions error:", err));
             };
 
-            // [FUNGSI UTAMA] Fungsi ini sekarang hanya mengarahkan ke dasbor
+            // [FUNGSI PENCARIAN]
             const performSearch = (term) => {
                 const searchTerm = term.trim();
                 if (searchTerm !== '') {
-                    // Membuat URL tujuan dan pindah halaman
                     window.location.href = `dashboard_user.php?search=${encodeURIComponent(searchTerm)}`;
                 }
             };
 
             if (searchInput) {
-                // Menampilkan saran saat mengetik
                 searchInput.addEventListener('input', () => {
                     clearTimeout(searchTimeout);
                     searchTimeout = setTimeout(() => handleSearchInput(searchInput.value.trim(), suggestionsContainer), 300);
                 });
 
-                // Menjalankan pencarian saat menekan Enter
                 searchInput.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter') {
                         e.preventDefault();
@@ -260,7 +268,6 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
             }
 
             if (suggestionsContainer) {
-                // Menjalankan pencarian saat salah satu saran diklik
                 suggestionsContainer.addEventListener('click', (e) => {
                     if (e.target.classList.contains('suggestion-item')) {
                         const value = e.target.textContent.replace('@', '');
@@ -269,7 +276,7 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
                 });
             }
 
-            // Klik di luar untuk menutup semua
+            // [TUTUP DROPDOWN DAN MODAL JIKA KLIK DI LUAR]
             document.addEventListener('click', (event) => {
                 if (profileBtn && !profileBtn.parentElement.contains(event.target)) {
                     profileDropdown.classList.remove('show');

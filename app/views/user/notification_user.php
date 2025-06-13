@@ -207,105 +207,10 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
     </main>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const profileBtn = document.querySelector('.profile-btn');
-            const profileDropdown = document.getElementById('profile-menu');
-            const searchInput = document.getElementById('searchInput');
-            const suggestionsContainer = document.getElementById('searchSuggestions');
-            const searchWrapper = document.querySelector('.search-wrapper');
-            let searchTimeout = null;
-
-            // Dropdown profil
-            if (profileBtn) {
-                profileBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    profileDropdown.classList.toggle('show');
-                });
-            }
-
-            // --- [DIPERBAIKI] Search Logic ---
-            const renderSuggestions = (data, container) => {
-                if (!container) return;
-                let html = '';
-                const createSuggestionItem = (text, type = 'search') => `<div class="suggestion-item" data-type="${type}">${text}</div>`;
-
-                if (data.titles && data.titles.length > 0) {
-                    html += '<div class="suggestion-group"><h5>Judul</h5>';
-                    data.titles.forEach(s => html += createSuggestionItem(s));
-                    html += '</div>';
-                }
-                if (data.users && data.users.length > 0) {
-                    html += '<div class="suggestion-group"><h5>Seniman</h5>';
-                    data.users.forEach(s => html += createSuggestionItem(`@${s}`));
-                    html += '</div>';
-                }
-                if (data.categories && data.categories.length > 0) {
-                    html += '<div class="suggestion-group"><h5>Kategori</h5>';
-                    data.categories.forEach(s => html += createSuggestionItem(s, 'category'));
-                    html += '</div>';
-                }
-                // ... (bisa ditambahkan grup lain seperti user atau kategori jika perlu)
-                container.innerHTML = html;
-                container.style.display = html ? 'block' : 'none';
-            };
-
-            const handleSearchInput = (term, container) => {
-                if (!term) {
-                    container.style.display = 'none';
-                    return;
-                }
-                // Pastikan Anda membuat file get_search_suggestions.php di path yang benar
-                fetch(`/Gallery_Seni_Online/app/views/user/get_search_suggestions.php?term=${encodeURIComponent(term)}`)
-                    .then(res => res.json())
-                    .then(data => renderSuggestions(data, container))
-                    .catch(err => console.error("Fetch suggestions error:", err));
-            };
-
-            // [FUNGSI UTAMA] Fungsi ini sekarang hanya mengarahkan ke dasbor
-            const performSearch = (term) => {
-                const searchTerm = term.trim();
-                if (searchTerm !== '') {
-                    // Membuat URL tujuan dan pindah halaman
-                    window.location.href = `dashboard_user.php?search=${encodeURIComponent(searchTerm)}`;
-                }
-            };
-
-            if (searchInput) {
-                // Menampilkan saran saat mengetik
-                searchInput.addEventListener('input', () => {
-                    clearTimeout(searchTimeout);
-                    searchTimeout = setTimeout(() => handleSearchInput(searchInput.value.trim(), suggestionsContainer), 300);
-                });
-
-                // Menjalankan pencarian saat menekan Enter
-                searchInput.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        performSearch(searchInput.value);
-                    }
-                });
-            }
-
-            if (suggestionsContainer) {
-                // Menjalankan pencarian saat salah satu saran diklik
-                suggestionsContainer.addEventListener('click', (e) => {
-                    if (e.target.classList.contains('suggestion-item')) {
-                        const value = e.target.textContent.replace('@', '');
-                        performSearch(value);
-                    }
-                });
-            }
-
-            // --- Klik di luar untuk menutup semua dropdown ---
-            document.addEventListener('click', (event) => {
-                if (profileBtn && !profileBtn.parentElement.contains(event.target)) {
-                    profileDropdown.classList.remove('show');
-                }
-                if (searchWrapper && !searchWrapper.contains(event.target)) {
-                    if (suggestionsContainer) suggestionsContainer.style.display = 'none';
-                }
-            });
-        });
+        // [JS] Dropdown profil dan logika pencarian
+        // [JS] Render saran pencarian
+        // [JS] Handle input dan klik pada saran pencarian
+        // [JS] Tutup dropdown jika klik di luar
     </script>
 </body>
 

@@ -1,4 +1,5 @@
 <?php
+// Mulai sesi dan cek autentikasi pengguna
 session_start();
 require_once '../../../config/inc_koneksi.php';
 
@@ -13,6 +14,7 @@ $action = $_GET['action'] ?? '';
 
 header('Content-Type: application/json');
 
+// Ambil daftar notifikasi
 if ($action === 'fetch') {
     $query = "
         SELECT 
@@ -30,7 +32,7 @@ if ($action === 'fetch') {
         LIMIT 20
     ";
     $stmt = mysqli_prepare($koneksi, $query);
-    mysqli_stmt_bind_param($stmt, "i", $currentUserId); // Use the corrected variable name
+    mysqli_stmt_bind_param($stmt, "i", $currentUserId);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
 
@@ -39,12 +41,14 @@ if ($action === 'fetch') {
         $notifications[] = $row;
     }
     echo json_encode(['notifications' => $notifications]);
+    // Tandai notifikasi sebagai sudah dibaca
 } elseif ($action === 'mark_read' && isset($_GET['id'])) {
     $notificationId = (int)$_GET['id'];
     $stmt = mysqli_prepare($koneksi, "UPDATE notifications SET is_read = 1 WHERE id = ? AND user_id = ?");
-    mysqli_stmt_bind_param($stmt, "ii", $notificationId, $currentUserId); // Use the corrected variable name
+    mysqli_stmt_bind_param($stmt, "ii", $notificationId, $currentUserId);
     mysqli_stmt_execute($stmt);
     echo json_encode(['status' => 'success']);
+    // Hitung jumlah notifikasi yang belum dibaca
 } elseif ($action === 'unread_count') {
     $stmt = mysqli_prepare($koneksi, "SELECT COUNT(id) as count FROM notifications WHERE user_id = ? AND is_read = 0");
     mysqli_stmt_bind_param($stmt, "i", $currentUserId);

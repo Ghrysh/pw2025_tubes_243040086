@@ -1,8 +1,4 @@
-/* File: style_editprofile_modern.css (Versi 1.1 - Perbaikan Live Search) */
-
-/* =================================================================== */
-/* === BAGIAN 1: GAYA DASAR (DIIMPOR DARI DASBOR) === */
-/* =================================================================== */
+/* === Variabel Warna dan Reset CSS === */
 
 :root {
   --color-primary: #3b82f6;
@@ -44,9 +40,7 @@ body {
   }
 }
 
-/* =================================================================== */
-/* === BAGIAN 2: GAYA KHUSUS HALAMAN EDIT PROFIL === */
-/* =================================================================== */
+/* === Tata Letak Utama Edit Profil === */
 
 .main-container {
   display: flex;
@@ -61,7 +55,7 @@ body {
     0 2px 4px -1px rgba(0, 0, 0, 0.05);
   padding: 2.5rem;
   width: 100%;
-  max-width: 56rem; /* 896px */
+  max-width: 56rem;
   animation: card-appear 0.5s ease-out forwards;
 }
 
@@ -93,6 +87,8 @@ body {
   margin-bottom: 1.5rem;
   color: var(--color-text-main);
 }
+
+/* === Bagian Foto Profil === */
 
 .photo-section {
   text-align: center;
@@ -143,6 +139,8 @@ body {
   display: none;
 }
 
+/* === Formulir Edit Profil === */
+
 .form-group {
   margin-bottom: 1.5rem;
 }
@@ -178,7 +176,8 @@ textarea {
   margin: 2rem 0;
 }
 
-/* --- Sistem Tombol --- */
+/* === Gaya Tombol === */
+
 .btn {
   padding: 0.7rem 1.25rem;
   border-radius: 0.5rem;
@@ -230,7 +229,8 @@ textarea {
   border-top: 1px solid var(--color-border);
 }
 
-/* --- Responsive --- */
+/* === Responsif (Mobile & Tablet) === */
+
 @media (max-width: 768px) {
   .main-container {
     padding: 1.5rem 1rem;
@@ -243,7 +243,7 @@ textarea {
     gap: 2.5rem;
   }
   .photo-section {
-    grid-row: 1; /* Pindahkan ke atas di mobile */
+    grid-row: 1;
   }
   .card-footer {
     justify-content: center;

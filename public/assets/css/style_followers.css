@@ -1,8 +1,4 @@
-/* File: style_followers_modern.css (Versi 1.0) */
-
-/* =================================================================== */
-/* === BAGIAN 1: GAYA DASAR (DARI DASBOR) === */
-/* =================================================================== */
+/* === Variabel Warna dan Gaya Dasar === */
 
 :root {
   --color-primary: #3b82f6;
@@ -34,6 +30,8 @@ body {
   line-height: 1.6;
 }
 
+/* === Gaya Tombol === */
+
 .btn {
   padding: 0.6rem 1.25rem;
   border-radius: 0.5rem;
@@ -64,12 +62,10 @@ body {
   color: var(--color-text-main);
 }
 
-/* =================================================================== */
-/* === BAGIAN 2: GAYA KHUSUS HALAMAN FOLLOWERS === */
-/* =================================================================== */
+/* === Layout dan Header Halaman Followers === */
 
 .main-container {
-  max-width: 768px; /* Layout lebih sempit, cocok untuk daftar */
+  max-width: 768px;
   margin: 2rem auto;
   padding: 0 1.5rem;
 }
@@ -104,6 +100,8 @@ body {
   color: var(--color-primary);
   border-bottom-color: var(--color-primary);
 }
+
+/* === Daftar User (Followers) === */
 
 .user-list {
   display: flex;
@@ -161,7 +159,8 @@ body {
   border-radius: 0.75rem;
 }
 
-/* --- Responsive --- */
+/* === Responsive (Responsif) === */
+
 @media (max-width: 768px) {
   .main-container {
     padding: 0 1rem;

@@ -1,12 +1,13 @@
 <?php
+// ==========================
+// Inisialisasi Sesi & Koneksi Database
+// ==========================
 session_start();
 require_once '../../../config/inc_koneksi.php';
 
-// =================================================================
-// PROSES LOGIKA PHP
-// =================================================================
-
-// Logika Hapus Pesan
+// ==========================
+// Proses Hapus Pesan
+// ==========================
 if (isset($_GET['delete'])) {
     $msg_id = (int) $_GET['delete'];
     $query_delete = "DELETE FROM messages WHERE id = $msg_id";
@@ -15,14 +16,17 @@ if (isset($_GET['delete'])) {
     exit;
 }
 
-// Ambil profil admin yang sedang login untuk header
+// ==========================
+// Ambil Profil Admin Login
+// ==========================
 $admin_id = (int) ($_SESSION['id'] ?? 0);
 $profil_query = "SELECT * FROM user_profiles WHERE user_id = $admin_id";
 $profil_result = mysqli_query($koneksi, $profil_query);
 $profil = mysqli_fetch_assoc($profil_result);
 
-// Ambil semua data pesan dari pengguna
-// PENTING: Sesuaikan nama tabel jika berbeda di database Anda.
+// ==========================
+// Ambil Data Pesan dari Database
+// ==========================
 $query_messages = "
     SELECT 
         messages.id, 
@@ -47,6 +51,9 @@ if ($result_messages) {
 <html lang="id">
 
 <head>
+    <!-- ==========================
+         Metadata & Link CSS/Font
+         ========================== -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../../../public/assets/css/style_manage_messages_admin.css">
@@ -62,6 +69,9 @@ if ($result_messages) {
 </head>
 
 <body>
+    <!-- ==========================
+         Sidebar Navigasi
+         ========================== -->
     <aside class="sidebar">
         <a href="dashboard_admin.php" class="sidebar__logo">
             <img src="../../../public/assets/img/loading_logo.png" alt="MizuPix Logo">
@@ -80,6 +90,9 @@ if ($result_messages) {
         </nav>
     </aside>
 
+    <!-- ==========================
+         Konten Utama & Header
+         ========================== -->
     <main class="main-content">
         <header class="header">
             <div class="header__title">
@@ -101,6 +114,9 @@ if ($result_messages) {
             </div>
         </header>
 
+        <!-- ==========================
+             Widget Daftar Pesan Masuk
+             ========================== -->
         <section class="widget-container">
             <div class="card">
                 <div class="card-header">
@@ -131,6 +147,9 @@ if ($result_messages) {
         </section>
     </main>
 
+    <!-- ==========================
+         Script JavaScript Interaktif
+         ========================== -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const messagesData = <?php echo json_encode($messages); ?>;

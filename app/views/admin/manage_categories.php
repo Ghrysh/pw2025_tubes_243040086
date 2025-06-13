@@ -1,12 +1,13 @@
 <?php
+// ==========================
+// Inisialisasi Sesi & Koneksi Database
+// ==========================
 session_start();
 require_once '../../../config/inc_koneksi.php';
 
-// =================================================================
-// PROSES LOGIKA PHP (TAMBAH, EDIT, HAPUS)
-// =================================================================
-
+// ==========================
 // Proses Tambah Kategori
+// ==========================
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_category'])) {
     $name = mysqli_real_escape_string($koneksi, $_POST['category_name']);
     if (!empty($name)) {
@@ -16,7 +17,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_category'])) {
     exit;
 }
 
+// ==========================
 // Proses Edit Kategori
+// ==========================
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_category'])) {
     $id = (int) $_POST['category_id'];
     $name = mysqli_real_escape_string($koneksi, $_POST['category_name']);
@@ -27,7 +30,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_category'])) {
     exit;
 }
 
+// ==========================
 // Proses Hapus Kategori
+// ==========================
 if (isset($_GET['delete'])) {
     $category_id = (int) $_GET['delete'];
     mysqli_query($koneksi, "DELETE FROM categories WHERE id = $category_id");
@@ -35,13 +40,17 @@ if (isset($_GET['delete'])) {
     exit;
 }
 
-// Ambil profil admin yang sedang login untuk header
+// ==========================
+// Ambil Profil Admin Login
+// ==========================
 $admin_id = (int) ($_SESSION['id'] ?? 0);
 $profil_query = "SELECT * FROM user_profiles WHERE user_id = $admin_id";
 $profil_result = mysqli_query($koneksi, $profil_query);
 $profil = mysqli_fetch_assoc($profil_result);
 
-// Ambil semua data kategori
+// ==========================
+// Ambil Data Semua Kategori
+// ==========================
 $query_categories = "SELECT * FROM categories ORDER BY name ASC";
 $result_categories = mysqli_query($koneksi, $query_categories);
 $categories = [];
@@ -55,6 +64,9 @@ if ($result_categories) {
 <html lang="id">
 
 <head>
+    <!-- ==========================
+         Bagian Head (Meta, CSS, Judul)
+         ========================== -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../../../public/assets/css/style_manage_categories_admin.css">
@@ -70,6 +82,9 @@ if ($result_categories) {
 </head>
 
 <body>
+    <!-- ==========================
+         Sidebar Navigasi
+         ========================== -->
     <aside class="sidebar">
         <a href="dashboard_admin.php" class="sidebar__logo">
             <img src="../../../public/assets/img/loading_logo.png" alt="MizuPix Logo">
@@ -89,6 +104,9 @@ if ($result_categories) {
     </aside>
 
     <main class="main-content">
+        <!-- ==========================
+             Header Halaman & Profil Admin
+             ========================== -->
         <header class="header">
             <div class="header__title">
                 <h1>Manajemen Kategori</h1>
@@ -110,6 +128,9 @@ if ($result_categories) {
         </header>
 
         <div class="grid-container-2col">
+            <!-- ==========================
+                 Form Tambah Kategori Baru
+                 ========================== -->
             <div class="grid-item">
                 <div class="card">
                     <div class="card-header">
@@ -129,6 +150,9 @@ if ($result_categories) {
                 </div>
             </div>
 
+            <!-- ==========================
+                 Tabel Daftar Kategori
+                 ========================== -->
             <div class="grid-item">
                 <div class="card">
                     <div class="card-header">
@@ -157,6 +181,9 @@ if ($result_categories) {
         </div>
     </main>
 
+    <!-- ==========================
+         Script JavaScript Interaktif
+         ========================== -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const categoriesData = <?php echo json_encode($categories); ?>;

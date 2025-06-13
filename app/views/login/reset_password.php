@@ -1,12 +1,13 @@
 <?php
+// --- Inisialisasi Session dan Proteksi Halaman ---
 session_start();
 
-// Lindungi halaman ini, hanya bisa diakses jika session reset_email ada
 if (!isset($_SESSION['reset_email'])) {
     header("Location: lupa_password.php?error=" . urlencode("Silakan verifikasi akun Anda terlebih dahulu."));
     exit;
 }
 
+// --- Ambil Pesan Error Jika Ada ---
 $error = null;
 if (isset($_GET['error'])) {
     $error = urldecode($_GET['error']);
@@ -16,6 +17,7 @@ if (isset($_GET['error'])) {
 <html lang="id">
 
 <head>
+    <!-- --- Metadata dan Link CSS --- -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ubah Password - MizuPix</title>
@@ -25,6 +27,7 @@ if (isset($_GET['error'])) {
 </head>
 
 <body>
+    <!-- --- Kontainer Halaman Reset Password --- -->
     <div class="login-page-container">
         <div class="login-visual">
             <div class="visual-overlay"></div>
@@ -35,12 +38,14 @@ if (isset($_GET['error'])) {
         </div>
         <div class="login-form-wrapper">
             <div class="login-form-container">
+                <!-- --- Header Formulir --- -->
                 <div class="form-header">
                     <img src="../../../public/assets/img/logo.png" alt="Logo Mizupix" class="logo">
                     <h2>Atur Ulang Kata Sandi</h2>
                     <p>Masukkan kata sandi baru Anda.</p>
                 </div>
 
+                <!-- --- Notifikasi Error --- -->
                 <?php if ($error): ?>
                     <div class="notification is-error">
                         <i class='bx bxs-x-circle'></i>
@@ -48,6 +53,7 @@ if (isset($_GET['error'])) {
                     </div>
                 <?php endif; ?>
 
+                <!-- --- Formulir Ubah Password --- -->
                 <form action="../../controller/update_password_controller.php" method="POST" class="login-form">
                     <div class="form-group">
                         <label for="new_password">Kata Sandi Baru</label>

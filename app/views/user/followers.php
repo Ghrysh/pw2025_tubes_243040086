@@ -1,4 +1,5 @@
 <?php
+// [SESSION & KONEKSI] Mulai session dan cek login, koneksi ke database
 session_start();
 require_once '../../../config/inc_koneksi.php';
 
@@ -15,8 +16,7 @@ if (!isset($_GET['username'])) {
 $viewedUsername = $_GET['username'];
 $type = $_GET['type'] ?? 'followers';
 
-// 1. Dapatkan ID dari username yang profilnya dilihat
-// [DIPERBAIKI] Menambahkan alias 'l.id' dan 'up.nama_lengkap' untuk mengatasi ambiguitas
+// [AMBIL DATA PROFIL YANG DILIHAT] Ambil ID dan nama lengkap user yang profilnya dilihat
 $stmt_user = mysqli_prepare(
     $koneksi,
     "SELECT l.id, up.nama_lengkap 
@@ -33,7 +33,7 @@ if (!$viewedProfile) {
 }
 $viewedUserId = (int)$viewedProfile['id'];
 
-// 2. Siapkan query berdasarkan tipe (followers atau following)
+// [QUERY DAFTAR FOLLOWERS/FOLLOWING] Siapkan query untuk followers atau following
 $userList = [];
 $query = "";
 $pageTitle = "";
@@ -64,7 +64,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 }
 mysqli_stmt_close($stmt_list);
 
-// 3. Dapatkan daftar siapa saja yang di-follow oleh PENGGUNA SAAT INI
+// [AMBIL FOLLOWING USER SAAT INI] Ambil daftar user yang diikuti oleh user saat ini
 $myFollowings = [];
 $stmt_my_follows = mysqli_prepare($koneksi, "SELECT following_id FROM followers WHERE follower_id = ?");
 mysqli_stmt_bind_param($stmt_my_follows, "i", $currentUserId);
@@ -75,7 +75,7 @@ while ($row = mysqli_fetch_assoc($my_follows_result)) {
 }
 mysqli_stmt_close($stmt_my_follows);
 
-// Data untuk Navbar
+// [DATA NAVBAR] Ambil foto profil user saat ini untuk navbar
 $stmt_myprofile = mysqli_prepare($koneksi, "SELECT foto FROM user_profiles WHERE user_id = ?");
 mysqli_stmt_bind_param($stmt_myprofile, "i", $currentUserId);
 mysqli_stmt_execute($stmt_myprofile);
@@ -89,6 +89,7 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
 <html lang="id">
 
 <head>
+    <!-- [HEAD] Metadata, judul, dan link stylesheet -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><?php echo htmlspecialchars($pageTitle); ?> - MizuPix</title>
@@ -103,10 +104,12 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
 
 <body>
     <?php
+    // [NAVBAR] Tampilkan navbar
     include('../navbar/navbar.php');
     ?>
 
     <main class="main-container">
+        <!-- [HEADER HALAMAN] Judul dan tab followers/following -->
         <div class="page-header">
             <h1><?php echo htmlspecialchars($viewedProfile['nama_lengkap'] ?? $viewedUsername); ?></h1>
             <div class="profile-tabs">
@@ -115,6 +118,7 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
             </div>
         </div>
 
+        <!-- [DAFTAR USER] Tampilkan daftar followers/following -->
         <div class="user-list">
             <?php if (empty($userList)): ?>
                 <p class="list-empty-message">
@@ -132,6 +136,7 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
                         </a>
                         <div class="user-action">
                             <?php
+                            // [BUTTON FOLLOW/UNFOLLOW] Tampilkan tombol follow/unfollow jika bukan diri sendiri
                             if ($currentUserId !== (int)$listUser['id']):
                                 $isFollowing = isset($myFollowings[$listUser['id']]);
                             ?>
@@ -147,6 +152,7 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
     </main>
 
     <script>
+        // [JAVASCRIPT UTAMA] Interaksi tombol follow, dropdown profil, dan pencarian
         document.addEventListener('DOMContentLoaded', function() {
             const profileBtn = document.querySelector('.profile-btn');
             const profileDropdown = document.getElementById('profile-menu');
@@ -155,6 +161,7 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
             const searchWrapper = document.querySelector('.search-wrapper');
             let searchTimeout = null;
 
+            // [DROPDOWN PROFIL] Toggle dropdown profil
             if (profileBtn) {
                 profileBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -162,6 +169,7 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
                 });
             }
 
+            // [FOLLOW/UNFOLLOW AJAX] Tombol follow/unfollow
             document.querySelectorAll('.follow-btn').forEach(button => {
                 button.addEventListener('click', function() {
                     const userIdToFollow = this.dataset.userId;
@@ -200,7 +208,7 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
                 });
             });
 
-            // --- [DIPERBAIKI] Search Logic ---
+            // [LOGIKA PENCARIAN] Saran pencarian dan eksekusi pencarian
             const renderSuggestions = (data, container) => {
                 if (!container) return;
                 let html = '';
@@ -221,7 +229,6 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
                     data.categories.forEach(s => html += createSuggestionItem(s, 'category'));
                     html += '</div>';
                 }
-                // ... (bisa ditambahkan grup lain seperti user atau kategori jika perlu)
                 container.innerHTML = html;
                 container.style.display = html ? 'block' : 'none';
             };
@@ -231,30 +238,26 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
                     container.style.display = 'none';
                     return;
                 }
-                // Pastikan Anda membuat file get_search_suggestions.php di path yang benar
                 fetch(`/Gallery_Seni_Online/app/views/user/get_search_suggestions.php?term=${encodeURIComponent(term)}`)
                     .then(res => res.json())
                     .then(data => renderSuggestions(data, container))
                     .catch(err => console.error("Fetch suggestions error:", err));
             };
 
-            // [FUNGSI UTAMA] Fungsi ini sekarang hanya mengarahkan ke dasbor
+            // [EKSEKUSI PENCARIAN] Arahkan ke dashboard dengan query pencarian
             const performSearch = (term) => {
                 const searchTerm = term.trim();
                 if (searchTerm !== '') {
-                    // Membuat URL tujuan dan pindah halaman
                     window.location.href = `dashboard_user.php?search=${encodeURIComponent(searchTerm)}`;
                 }
             };
 
             if (searchInput) {
-                // Menampilkan saran saat mengetik
                 searchInput.addEventListener('input', () => {
                     clearTimeout(searchTimeout);
                     searchTimeout = setTimeout(() => handleSearchInput(searchInput.value.trim(), suggestionsContainer), 300);
                 });
 
-                // Menjalankan pencarian saat menekan Enter
                 searchInput.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter') {
                         e.preventDefault();
@@ -264,7 +267,6 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
             }
 
             if (suggestionsContainer) {
-                // Menjalankan pencarian saat salah satu saran diklik
                 suggestionsContainer.addEventListener('click', (e) => {
                     if (e.target.classList.contains('suggestion-item')) {
                         const value = e.target.textContent.replace('@', '');
@@ -273,7 +275,7 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
                 });
             }
 
-            // --- Klik di luar untuk menutup semua dropdown ---
+            // [TUTUP DROPDOWN] Tutup dropdown jika klik di luar
             document.addEventListener('click', (event) => {
                 if (profileBtn && !profileBtn.parentElement.contains(event.target)) {
                     profileDropdown.classList.remove('show');

@@ -1,15 +1,10 @@
 <?php
-// File: app/controller/detail_controller.php
-
-// Pastikan session sudah dimulai di file yang memanggil
+// Inisialisasi session jika belum dimulai
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-/**
- * Mengambil semua detail untuk satu gambar, termasuk info uploader,
- * jumlah like, dan apakah pengguna saat ini sudah me-like atau menyimpan.
- */
+// Fungsi: Mengambil detail gambar beserta info uploader, like, bookmark, dan komentar
 function getImageDetails($imageId, $currentUserId, $koneksi)
 {
     $query = "
@@ -35,9 +30,7 @@ function getImageDetails($imageId, $currentUserId, $koneksi)
     return mysqli_fetch_assoc($result);
 }
 
-/**
- * Mengambil semua komentar untuk satu gambar.
- */
+// Fungsi: Mengambil semua komentar untuk satu gambar
 function getComments($imageId, $koneksi)
 {
     $comments = [];
@@ -59,9 +52,7 @@ function getComments($imageId, $koneksi)
     return $comments;
 }
 
-/**
- * Mengambil gambar rekomendasi secara acak, mengecualikan gambar saat ini.
- */
+// Fungsi: Mengambil gambar rekomendasi secara acak, kecuali gambar saat ini
 function getRecommendedImages($currentImageId, $limit, $koneksi)
 {
     $images = [];

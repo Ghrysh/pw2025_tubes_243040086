@@ -1,48 +1,47 @@
 <?php
+// ==============================
+// Bagian: Inisialisasi Sesi & Koneksi Database
+// ==============================
 session_start();
 require_once '../../../config/inc_koneksi.php';
 
-// =================================================================
-// PROSES LOGIKA PHP
-// =================================================================
-
-// Logika Hapus Pengguna
+// ==============================
+// Bagian: Proses Hapus Pengguna
+// ==============================
 if (isset($_GET['delete'])) {
     $user_id_to_delete = (int) $_GET['delete'];
 
-    // PENTING: Jangan biarkan admin menghapus akunnya sendiri
+    // Cegah admin menghapus akun sendiri
     if (isset($_SESSION['id']) && $user_id_to_delete == $_SESSION['id']) {
-        // Redirect dengan pesan error jika mencoba menghapus diri sendiri
         header("Location: manage_users.php?status=self_delete_error");
         exit;
     }
 
-    // Lanjutkan proses hapus jika bukan akun sendiri
+    // Proses hapus pengguna
     $query_delete = "DELETE FROM login WHERE id = $user_id_to_delete";
     mysqli_query($koneksi, $query_delete);
-
-    // Opsional: Hapus juga data terkait dari tabel lain (misal: user_profiles)
-    // $query_delete_profile = "DELETE FROM user_profiles WHERE user_id = $user_id_to_delete";
-    // mysqli_query($koneksi, $query_delete_profile);
 
     header("Location: manage_users.php?status=deleted");
     exit;
 }
 
-// Ambil profil admin yang sedang login untuk header
+// ==============================
+// Bagian: Ambil Profil Admin Login
+// ==============================
 $admin_id = (int) ($_SESSION['id'] ?? 0);
 $profil_query = "SELECT * FROM user_profiles WHERE user_id = $admin_id";
 $profil_result = mysqli_query($koneksi, $profil_query);
 $profil = mysqli_fetch_assoc($profil_result);
 $username = $_SESSION['username'] ?? 'Admin';
 
-// Ambil semua data pengguna untuk ditampilkan di tabel
+// ==============================
+// Bagian: Ambil Data Seluruh Pengguna
+// ==============================
 $query_users = "SELECT id, username, email, created_at FROM login ORDER BY created_at DESC";
 $result_users = mysqli_query($koneksi, $query_users);
 $users = [];
 if ($result_users) {
     while ($row = mysqli_fetch_assoc($result_users)) {
-        // Jangan tampilkan admin yang sedang login di dalam daftar
         if ($row['id'] != $admin_id) {
             $users[] = $row;
         }
@@ -53,6 +52,9 @@ if ($result_users) {
 <html lang="id">
 
 <head>
+    <!-- ==========================
+         Bagian: Header & Resource
+    =========================== -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../../../public/assets/css/style_manage_image_admin.css">
@@ -68,6 +70,9 @@ if ($result_users) {
 </head>
 
 <body>
+    <!-- ==========================
+         Bagian: Sidebar Navigasi
+    =========================== -->
     <aside class="sidebar">
         <a href="dashboard_admin.php" class="sidebar__logo">
             <img src="../../../public/assets/img/loading_logo.png" alt="MizuPix Logo">
@@ -98,6 +103,9 @@ if ($result_users) {
         </nav>
     </aside>
 
+    <!-- ==========================
+         Bagian: Konten Utama & Header
+    =========================== -->
     <main class="main-content">
         <header class="header">
             <div class="header__title">
@@ -119,6 +127,9 @@ if ($result_users) {
             </div>
         </header>
 
+        <!-- ==========================
+             Bagian: Widget Daftar Pengguna
+        =========================== -->
         <section class="widget-container">
             <div class="card">
                 <div class="card-header">
@@ -148,19 +159,22 @@ if ($result_users) {
         </section>
     </main>
 
+    <!-- ==========================
+         Bagian: Script JavaScript
+    =========================== -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Mengubah array PHP menjadi array JavaScript
+            // Bagian: Konversi Data Pengguna dari PHP ke JS
             const usersData = <?php echo json_encode($users); ?>;
             const tableBody = document.getElementById('userTableBody');
             const searchInput = document.getElementById('searchInput');
 
             let currentSort = {
-                key: 'created_at', // Default sort
+                key: 'created_at',
                 direction: 'desc'
             };
 
-            // Fungsi untuk menampilkan data ke dalam tabel
+            // Bagian: Fungsi Render Tabel Pengguna
             function renderTable(data) {
                 tableBody.innerHTML = '';
 
@@ -193,7 +207,7 @@ if ($result_users) {
                 });
             }
 
-            // Fungsi untuk sorting data
+            // Bagian: Fungsi Sorting Data Pengguna
             function sortData(data, key, direction) {
                 data.sort((a, b) => {
                     const valA = a[key] ? a[key].toString().toLowerCase() : '';
@@ -211,7 +225,7 @@ if ($result_users) {
                 return data;
             }
 
-            // Event listener untuk input pencarian (live search)
+            // Bagian: Event Live Search Pengguna
             searchInput.addEventListener('keyup', () => {
                 const searchTerm = searchInput.value.toLowerCase();
 
@@ -224,7 +238,7 @@ if ($result_users) {
                 renderTable(sortData(filteredData, currentSort.key, currentSort.direction));
             });
 
-            // Event listener untuk header tabel (sorting)
+            // Bagian: Event Sorting Kolom Tabel
             document.querySelectorAll('.sortable').forEach(header => {
                 header.addEventListener('click', () => {
                     const sortKey = header.getAttribute('data-sort');
@@ -245,12 +259,12 @@ if ($result_users) {
                 });
             });
 
-            // Render tabel pertama kali saat halaman dimuat
+            // Bagian: Render Tabel Saat Halaman Dimuat
             const sortedInitialData = sortData(usersData, currentSort.key, currentSort.direction);
             document.querySelector(`[data-sort="${currentSort.key}"]`).classList.add(`sort-${currentSort.direction}`);
             renderTable(sortedInitialData);
 
-            // Script untuk dropdown profil
+            // Bagian: Dropdown Profil Admin
             const profileBtn = document.querySelector('.profile-btn');
             const profileDropdown = document.querySelector('.profile-dropdown');
 

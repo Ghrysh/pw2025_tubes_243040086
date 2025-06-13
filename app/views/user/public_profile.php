@@ -1,19 +1,23 @@
 <?php
+// [SESSION & KONEKSI] Mulai sesi dan koneksi ke database
 session_start();
 require_once '../../../config/inc_koneksi.php';
 
+// [CEK LOGIN] Pastikan user sudah login
 if (!isset($_SESSION['id'])) {
     header("Location: ../login/login.php");
     exit;
 }
 $currentUserId = (int)$_SESSION['id'];
 
+// [CEK USERNAME] Pastikan ada parameter username
 if (!isset($_GET['username'])) {
     header("Location: profile_user.php");
     exit;
 }
 $viewedUsername = $_GET['username'];
 
+// [FUNGSI] Ambil detail profil publik user
 function getPublicProfileDetails($username, $koneksi)
 {
     $stmt = mysqli_prepare(
@@ -29,6 +33,7 @@ function getPublicProfileDetails($username, $koneksi)
     return mysqli_fetch_assoc($result);
 }
 
+// [FUNGSI] Ambil daftar karya user
 function getUserPosts($userId, $koneksi)
 {
     $stmt = mysqli_prepare($koneksi, "SELECT id, image_path, title FROM images WHERE user_id = ? ORDER BY uploaded_at DESC");
@@ -37,6 +42,7 @@ function getUserPosts($userId, $koneksi)
     return mysqli_stmt_get_result($stmt);
 }
 
+// [FUNGSI] Cek status follow
 function checkFollowStatus($followerId, $followingId, $koneksi)
 {
     $stmt = mysqli_prepare($koneksi, "SELECT id FROM followers WHERE follower_id = ? AND following_id = ?");
@@ -48,6 +54,7 @@ function checkFollowStatus($followerId, $followingId, $koneksi)
     return $isFollowing;
 }
 
+// [FUNGSI] Hitung jumlah followers dan following
 function getFollowCounts($userId, $koneksi)
 {
     $counts = ['followers' => 0, 'following' => 0];
@@ -65,6 +72,7 @@ function getFollowCounts($userId, $koneksi)
     return $counts;
 }
 
+// [AMBIL DATA PROFIL YANG DILIHAT]
 $viewedProfile = getPublicProfileDetails($viewedUsername, $koneksi);
 
 if (!$viewedProfile) {
@@ -72,22 +80,26 @@ if (!$viewedProfile) {
 }
 $viewedUserId = (int)$viewedProfile['id'];
 
+// [AMBIL KARYA, JUMLAH POST, FOLLOW COUNT]
 $posts_result = getUserPosts($viewedUserId, $koneksi);
 $post_count = mysqli_num_rows($posts_result);
 $followCounts = getFollowCounts($viewedUserId, $koneksi);
 
+// [CEK PROFIL SENDIRI & STATUS FOLLOW]
 $isOwnProfile = ($currentUserId === $viewedUserId);
 $isFollowing = false;
 if (!$isOwnProfile) {
     $isFollowing = checkFollowStatus($currentUserId, $viewedUserId, $koneksi);
 }
 
+// [AMBIL FOTO PROFIL SENDIRI]
 $stmt_myprofile = mysqli_prepare($koneksi, "SELECT foto FROM user_profiles WHERE user_id = ?");
 mysqli_stmt_bind_param($stmt_myprofile, "i", $currentUserId);
 mysqli_stmt_execute($stmt_myprofile);
 $myProfile = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt_myprofile));
 mysqli_stmt_close($stmt_myprofile);
 
+// [ATUR PATH FOTO PROFIL DEFAULT]
 $defaultPhotoPath = '/Gallery_Seni_Online/public/assets/img/profile_user/blank-profile.png';
 $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myProfile['foto']) : $defaultPhotoPath;
 $viewedUserPhoto = !empty($viewedProfile['foto']) ? htmlspecialchars($viewedProfile['foto']) : $defaultPhotoPath;
@@ -96,6 +108,7 @@ $viewedUserPhoto = !empty($viewedProfile['foto']) ? htmlspecialchars($viewedProf
 <html lang="id">
 
 <head>
+    <!-- [HEAD] Metadata dan CSS -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><?php echo htmlspecialchars($viewedProfile['nama_lengkap'] ?? $viewedProfile['username']); ?> - MizuPix</title>
@@ -110,10 +123,12 @@ $viewedUserPhoto = !empty($viewedProfile['foto']) ? htmlspecialchars($viewedProf
 
 <body>
     <?php
+    // [NAVBAR]
     include('../navbar/navbar.php');
     ?>
 
     <main class="main-container-profile">
+        <!-- [SEKSI PROFIL UTAMA] -->
         <section class="profile-hero">
             <div class="profile-main-info">
                 <div class="profile-avatar-wrapper"><img src="<?php echo $viewedUserPhoto; ?>" alt="Foto Profil" class="profile-avatar" /></div>
@@ -152,6 +167,7 @@ $viewedUserPhoto = !empty($viewedProfile['foto']) ? htmlspecialchars($viewedProf
             </div>
         </section>
 
+        <!-- [SEKSI GALERI KARYA] -->
         <section class="profile-gallery-section">
             <div class="profile-tabs"><button class="tab-btn active">Karya (<?php echo $post_count; ?>)</button></div>
             <div class="image-gallery">
@@ -175,6 +191,7 @@ $viewedUserPhoto = !empty($viewedProfile['foto']) ? htmlspecialchars($viewedProf
     </main>
 
     <script>
+        // [JAVASCRIPT UTAMA: Dropdown, Follow, Search]
         document.addEventListener('DOMContentLoaded', function() {
             const profileBtn = document.querySelector('.profile-btn');
             const profileDropdown = document.getElementById('profile-menu');
@@ -184,7 +201,7 @@ $viewedUserPhoto = !empty($viewedProfile['foto']) ? htmlspecialchars($viewedProf
             const followButtons = document.querySelectorAll('.follow-btn');
             let searchTimeout = null;
 
-            // Dropdown profil
+            // [DROPDOWN PROFIL]
             if (profileBtn) {
                 profileBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -192,7 +209,7 @@ $viewedUserPhoto = !empty($viewedProfile['foto']) ? htmlspecialchars($viewedProf
                 });
             }
 
-            // Aksi Follow/Unfollow
+            // [AKSI FOLLOW/UNFOLLOW]
             followButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     const userIdToFollow = this.dataset.userId;
@@ -241,7 +258,7 @@ $viewedUserPhoto = !empty($viewedProfile['foto']) ? htmlspecialchars($viewedProf
                 });
             });
 
-            // --- [DIPERBAIKI] Search Logic ---
+            // [LOGIKA SEARCH & SUGGESTION]
             const renderSuggestions = (data, container) => {
                 if (!container) return;
                 let html = '';
@@ -262,7 +279,6 @@ $viewedUserPhoto = !empty($viewedProfile['foto']) ? htmlspecialchars($viewedProf
                     data.categories.forEach(s => html += createSuggestionItem(s, 'category'));
                     html += '</div>';
                 }
-                // ... (bisa ditambahkan grup lain seperti user atau kategori jika perlu)
                 container.innerHTML = html;
                 container.style.display = html ? 'block' : 'none';
             };
@@ -272,30 +288,28 @@ $viewedUserPhoto = !empty($viewedProfile['foto']) ? htmlspecialchars($viewedProf
                     container.style.display = 'none';
                     return;
                 }
-                // Pastikan Anda membuat file get_search_suggestions.php di path yang benar
                 fetch(`/Gallery_Seni_Online/app/views/user/get_search_suggestions.php?term=${encodeURIComponent(term)}`)
                     .then(res => res.json())
                     .then(data => renderSuggestions(data, container))
                     .catch(err => console.error("Fetch suggestions error:", err));
             };
 
-            // [FUNGSI UTAMA] Fungsi ini sekarang hanya mengarahkan ke dasbor
+            // [FUNGSI PENCARIAN]
             const performSearch = (term) => {
                 const searchTerm = term.trim();
                 if (searchTerm !== '') {
-                    // Membuat URL tujuan dan pindah halaman
                     window.location.href = `dashboard_user.php?search=${encodeURIComponent(searchTerm)}`;
                 }
             };
 
             if (searchInput) {
-                // Menampilkan saran saat mengetik
+                // [SUGGESTION SAAT KETIK]
                 searchInput.addEventListener('input', () => {
                     clearTimeout(searchTimeout);
                     searchTimeout = setTimeout(() => handleSearchInput(searchInput.value.trim(), suggestionsContainer), 300);
                 });
 
-                // Menjalankan pencarian saat menekan Enter
+                // [PENCARIAN SAAT ENTER]
                 searchInput.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter') {
                         e.preventDefault();
@@ -305,7 +319,7 @@ $viewedUserPhoto = !empty($viewedProfile['foto']) ? htmlspecialchars($viewedProf
             }
 
             if (suggestionsContainer) {
-                // Menjalankan pencarian saat salah satu saran diklik
+                // [PENCARIAN DARI SUGGESTION]
                 suggestionsContainer.addEventListener('click', (e) => {
                     if (e.target.classList.contains('suggestion-item')) {
                         const value = e.target.textContent.replace('@', '');
@@ -314,7 +328,7 @@ $viewedUserPhoto = !empty($viewedProfile['foto']) ? htmlspecialchars($viewedProf
                 });
             }
 
-            // Klik di luar untuk menutup semua
+            // [TUTUP DROPDOWN & SUGGESTION KETIKA KLIK DI LUAR]
             document.addEventListener('click', (event) => {
                 if (profileBtn && !profileBtn.parentElement.contains(event.target)) {
                     profileDropdown.classList.remove('show');

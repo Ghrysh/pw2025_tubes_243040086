@@ -1,19 +1,22 @@
 <?php
+// Mulai sesi
 session_start();
 require_once '../../config/inc_koneksi.php';
 
-// Lindungi controller, hanya bisa diakses jika session reset_email ada
+// Proteksi akses controller
 if (!isset($_SESSION['reset_email'])) {
     header("Location: ../views/login/login.php");
     exit;
 }
 
+// Proses jika request POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Ambil data dari form
     $new_password = $_POST['new_password'];
     $confirm_password = $_POST['confirm_password'];
     $email = $_SESSION['reset_email'];
 
-    // Validasi
+    // Validasi input
     if (empty($new_password) || empty($confirm_password)) {
         $error = urlencode("Semua kolom wajib diisi.");
         header("Location: ../views/login/reset_password.php?error=$error");
@@ -39,6 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt = $koneksi->prepare("UPDATE login SET password = ? WHERE email = ?");
     $stmt->bind_param("ss", $hashed_password, $email);
 
+    // Eksekusi query dan handle hasil
     if ($stmt->execute()) {
         // Hapus session setelah berhasil
         unset($_SESSION['reset_email']);
@@ -55,6 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->close();
     $koneksi->close();
 } else {
+    // Redirect jika bukan POST
     header("Location: ../views/login/reset_password.php");
     exit;
 }

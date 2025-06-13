@@ -1,8 +1,4 @@
-/* File: style_detail_modern.css (Versi 1.1 - Perbaikan Ikon) */
-
-/* =================================================================== */
-/* === BAGIAN 1: GAYA DASAR (DARI DASBOR) === */
-/* =================================================================== */
+/* === Variabel Warna Utama === */
 
 :root {
   --color-primary: #3b82f6;
@@ -16,9 +12,12 @@
   --color-background: #f8fafc;
   --color-border: #e2e8f0;
   --color-muted-bg: #f1f5f9;
-  --color-danger: #ef4444; /* Merah untuk Like */
+  --color-danger: #ef4444;
   --color-danger-bg: #fee2e2;
 }
+
+/* === Reset dan Gaya Dasar === */
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -34,7 +33,8 @@ body {
   line-height: 1.6;
 }
 
-/* --- Tombol --- */
+/* === Tombol Umum === */
+
 .btn {
   padding: 0.7rem 1.25rem;
   border-radius: 0.5rem;
@@ -57,16 +57,14 @@ body {
   background-color: var(--color-primary-hover);
 }
 
-/* =================================================================== */
-/* === BAGIAN 2: GAYA KHUSUS HALAMAN DETAIL GAMBAR === */
-/* =================================================================== */
+/* === Kontainer Utama dan Kartu Detail === */
 
 .main-container {
   padding: 2rem 1.5rem;
 }
 .detail-card {
   display: flex;
-  max-width: 80rem; /* 1280px */
+  max-width: 80rem;
   min-height: 85vh;
   margin: 0 auto 4rem auto;
   background-color: var(--color-surface);
@@ -76,8 +74,10 @@ body {
     0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
+/* === Tampilan Gambar Utama === */
+
 .image-display-container {
-  flex: 6; /* Ambil 60% dari lebar */
+  flex: 6;
   background-color: var(--color-text-main);
   display: flex;
   align-items: center;
@@ -90,8 +90,10 @@ body {
   object-fit: contain;
 }
 
+/* === Sidebar Informasi Gambar === */
+
 .info-sidebar {
-  flex: 4; /* Ambil 40% dari lebar */
+  flex: 4;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
@@ -106,21 +108,20 @@ body {
   display: flex;
   gap: 0.5rem;
 }
-
-/* [DIPERBAIKI] Selector untuk menargetkan ikon di header detail saja */
 .action-header .icon-button {
   background-color: var(--color-muted-bg);
 }
 .action-header .icon-button:hover {
   background-color: var(--color-border);
 }
-
 .save-btn.saved {
   background-color: var(--color-accent);
 }
 .save-btn.saved:hover {
   background-color: var(--color-accent-hover);
 }
+
+/* === Informasi Pengunggah === */
 
 .uploader-info {
   padding: 1.5rem 0;
@@ -152,6 +153,8 @@ body {
   color: var(--color-text-secondary);
 }
 
+/* === Konten Scrollable dan Info Gambar === */
+
 .scrollable-content {
   flex-grow: 1;
   overflow-y: auto;
@@ -170,6 +173,8 @@ body {
   color: var(--color-text-secondary);
   line-height: 1.7;
 }
+
+/* === Komentar === */
 
 .comment-section h3 {
   font-size: 1rem;
@@ -211,6 +216,8 @@ body {
   font-size: 0.9rem;
   margin: 0;
 }
+
+/* === Footer Aksi (Like, Komentar) === */
 
 .action-footer {
   display: flex;
@@ -270,7 +277,8 @@ body {
   transform: scale(1.1);
 }
 
-/* --- Recommendation Section --- */
+/* === Rekomendasi Gambar Lain === */
+
 .recommendation-section {
   text-align: center;
   margin-top: 4rem;
@@ -299,7 +307,8 @@ body {
   display: block;
 }
 
-/* --- Toast Notification --- */
+/* === Notifikasi Toast === */
+
 .toast-notification {
   visibility: hidden;
   min-width: 250px;
@@ -325,7 +334,8 @@ body {
   bottom: 50px;
 }
 
-/* --- Responsive --- */
+/* === Responsif (Tablet & Mobile) === */
+
 @media (max-width: 1024px) {
   .image-gallery {
     column-count: 4;

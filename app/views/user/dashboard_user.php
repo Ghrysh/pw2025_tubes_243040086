@@ -125,6 +125,7 @@ $profil = getMyProfile($id, $koneksi);
 $categories = getCategories($koneksi);
 $defaultPhotoPath = '/Gallery_Seni_Online/public/assets/img/profile_user/blank-profile.png';
 $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defaultPhotoPath;
+$namaDepan = !empty($profil['nama_lengkap']) ? htmlspecialchars($profil['nama_lengkap']) : 'User';
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -191,7 +192,8 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
     <main class="main-container">
         <div class="page-controls">
             <div class="welcome-header">
-                <h1>Selamat datang, <?php echo htmlspecialchars(explode(' ', $profil['nama_lengkap'])[0]); ?>!</h1>
+                <h1>Selamat datang, <?php $namaDepan = (!empty(trim($profil['nama_lengkap'] ?? ''))) ? explode(' ', trim($profil['nama_lengkap']))[0] : 'User';
+                                    echo htmlspecialchars($namaDepan); ?>!</h1>
                 <p>Temukan inspirasi seni tanpa batas hari ini.</p>
             </div>
 

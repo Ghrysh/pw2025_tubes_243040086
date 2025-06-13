@@ -2,32 +2,26 @@
 session_start();
 require_once '../../../config/inc_koneksi.php';
 
-// =================================================================
-// PROSES LOGIKA PHP (TAMBAH, HAPUS, AMBIL DATA)
-// =================================================================
+// ======================[ Bagian: Variabel & Proses Tambah Akun Admin Baru ]======================
 
 $errors = [];
-// Proses Tambah Akun Admin Baru
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_admin_account'])) {
     $username = mysqli_real_escape_string($koneksi, $_POST['username']);
     $email = mysqli_real_escape_string($koneksi, $_POST['email']);
     $password = $_POST['password'];
 
-    // Validasi dasar
+    // Validasi Input & Proses Insert Akun Admin Baru
     if (empty($username) || empty($email) || empty($password)) {
         $errors[] = "Semua field harus diisi.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors[] = "Format email tidak valid.";
     } else {
-        // Cek jika username atau email sudah ada
         $check_query = "SELECT * FROM login WHERE username = '$username' OR email = '$email'";
         $check_result = mysqli_query($koneksi, $check_query);
         if (mysqli_num_rows($check_result) > 0) {
             $errors[] = "Username atau email sudah digunakan.";
         } else {
-            // Hash password untuk keamanan
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-            // Tambahkan user dengan role 'admin' (role = 2)
             $insert_query = "INSERT INTO login (username, email, password, role) VALUES ('$username', '$email', '$hashed_password', 2)";
             if (mysqli_query($koneksi, $insert_query)) {
                 header("Location: manage_account.php?status=added");
@@ -39,12 +33,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_admin_account']))
     }
 }
 
-// Proses Hapus Akun Admin
+// ======================[ Bagian: Proses Hapus Akun Admin ]======================
+
 if (isset($_GET['delete'])) {
     $user_id_to_delete = (int) $_GET['delete'];
     $admin_id_logged_in = (int) ($_SESSION['id'] ?? 0);
 
-    // Proteksi agar admin tidak bisa menghapus akunnya sendiri
+    // Proteksi Hapus Akun Sendiri
     if ($user_id_to_delete === $admin_id_logged_in) {
         header("Location: manage_account.php?status=self_delete_error");
         exit;
@@ -55,13 +50,15 @@ if (isset($_GET['delete'])) {
     }
 }
 
-// Ambil profil admin yang sedang login untuk header
+// ======================[ Bagian: Ambil Data Profil Admin Login ]======================
+
 $admin_id_logged_in = (int) ($_SESSION['id'] ?? 0);
 $profil_query = "SELECT * FROM user_profiles WHERE user_id = $admin_id_logged_in";
 $profil_result = mysqli_query($koneksi, $profil_query);
 $profil = mysqli_fetch_assoc($profil_result);
 
-// Ambil semua data akun dengan role 'admin'
+// ======================[ Bagian: Ambil Daftar Akun Admin ]======================
+
 $query_admins = "SELECT id, username, email, created_at FROM login WHERE role = 2 ORDER BY created_at DESC";
 $result_admins = mysqli_query($koneksi, $query_admins);
 $admins = [];
@@ -75,6 +72,7 @@ if ($result_admins) {
 <html lang="id">
 
 <head>
+    <!-- ======================[ Bagian: Head HTML & Asset ]====================== -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../../../public/assets/css/style_manage_messages_admin.css">
@@ -90,6 +88,7 @@ if ($result_admins) {
 </head>
 
 <body>
+    <!-- ======================[ Bagian: Sidebar Navigasi Admin ]====================== -->
     <aside class="sidebar">
         <a href="dashboard_admin.php" class="sidebar__logo">
             <img src="../../../public/assets/img/loading_logo.png" alt="MizuPix Logo">
@@ -109,6 +108,7 @@ if ($result_admins) {
     </aside>
 
     <main class="main-content">
+        <!-- ======================[ Bagian: Header & Profil Admin ]====================== -->
         <header class="header">
             <div class="header__title">
                 <h1>Kelola Akun Admin</h1>
@@ -130,6 +130,7 @@ if ($result_admins) {
         </header>
 
         <div class="grid-container-2col">
+            <!-- ======================[ Bagian: Form Tambah Akun Admin Baru ]====================== -->
             <div class="grid-item">
                 <div class="card">
                     <div class="card-header">
@@ -164,6 +165,7 @@ if ($result_admins) {
                 </div>
             </div>
 
+            <!-- ======================[ Bagian: Tabel Daftar Akun Admin & Fitur Cari/Sort ]====================== -->
             <div class="grid-item">
                 <div class="card">
                     <div class="card-header">
@@ -194,6 +196,7 @@ if ($result_admins) {
         </div>
     </main>
 
+    <!-- ======================[ Bagian: Script JS Tabel Admin (Cari, Sort, Render) ]====================== -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const adminsData = <?php echo json_encode($admins); ?>;

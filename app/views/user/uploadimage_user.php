@@ -1,7 +1,9 @@
 <?php
+// --- Inisialisasi Sesi & Koneksi Database ---
 session_start();
 require_once '../../../config/inc_koneksi.php';
 
+// --- Autentikasi User ---
 if (!isset($_SESSION['id'])) {
     header("Location: ../login/login.php");
     exit();
@@ -9,6 +11,7 @@ if (!isset($_SESSION['id'])) {
 
 $id = (int)$_SESSION['id'];
 
+// --- Fungsi: Ambil Profil User ---
 function getProfilUser($id, $koneksi)
 {
     $stmt = mysqli_prepare($koneksi, "SELECT foto FROM user_profiles WHERE user_id = ?");
@@ -18,6 +21,7 @@ function getProfilUser($id, $koneksi)
     return mysqli_fetch_assoc($result);
 }
 
+// --- Fungsi: Ambil Daftar Kategori ---
 function getCategories($koneksi)
 {
     $query = "SELECT id, name FROM categories ORDER BY name ASC";
@@ -29,6 +33,7 @@ function getCategories($koneksi)
     return $categories;
 }
 
+// --- Persiapan Data Profil & Kategori ---
 $profil = getProfilUser($id, $koneksi);
 $categories = getCategories($koneksi);
 $defaultPhotoPath = '/Gallery_Seni_Online/public/assets/img/profile_user/blank-profile.png';
@@ -38,6 +43,7 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
 <html lang="id">
 
 <head>
+    <!-- --- Metadata & Link CSS --- -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Unggah Karya Baru - MizuPix</title>
@@ -52,6 +58,7 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
 
 <body>
     <?php
+    // --- Navbar ---
     include('../navbar/navbar.php');
     ?>
 
@@ -63,12 +70,14 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
             </div>
 
             <?php
+            // --- Pesan Status Upload ---
             if (isset($_SESSION['uploadMsg']) && !empty($_SESSION['uploadMsg'])) {
                 echo '<div class="status-message-wrapper">' . $_SESSION['uploadMsg'] . '</div>';
                 unset($_SESSION['uploadMsg']);
             }
             ?>
 
+            <!-- --- Form Upload Gambar --- -->
             <form method="post" enctype="multipart/form-data" action="../../controller/uploadimage_controller.php" class="upload-form">
                 <div class="form-left">
                     <label for="image" class="image-upload-label">
@@ -114,8 +123,8 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
     </main>
 
     <script>
+        // --- Inisialisasi & Variabel DOM ---
         document.addEventListener('DOMContentLoaded', function() {
-            // --- Elemen DOM ---
             const profileBtn = document.querySelector('.profile-btn');
             const profileDropdown = document.getElementById('profile-menu');
             const imageInput = document.getElementById('image');
@@ -126,7 +135,7 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
             const searchWrapper = document.querySelector('.search-wrapper');
             let searchTimeout = null;
 
-            // --- Dropdown Profil ---
+            // --- Dropdown Profil User ---
             if (profileBtn) {
                 profileBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -134,19 +143,16 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
                 });
             }
 
-            // --- Logika Unggah Gambar & Drag-Drop ---
+            // --- Logika Upload & Preview Gambar ---
             const handleFileSelect = (file) => {
-                // [PENTING] Validasi file adalah gambar
                 if (file && file.type.startsWith('image/')) {
                     const reader = new FileReader();
                     reader.onload = (e) => {
                         preview.setAttribute('src', e.target.result);
-                        // Tambahkan kelas ini untuk memicu perubahan CSS
                         frame.classList.add('has-image');
                     }
                     reader.readAsDataURL(file);
                 } else {
-                    // Opsional: berikan feedback jika file bukan gambar
                     alert('Harap pilih file gambar (PNG, JPG, atau GIF).');
                 }
             };
@@ -163,15 +169,13 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
                     e.preventDefault();
                     frame.classList.remove('is-dragging');
                     if (e.dataTransfer.files.length > 0) {
-                        // Set file dari drop ke input file
                         imageInput.files = e.dataTransfer.files;
-                        // Panggil handler utama
                         handleFileSelect(e.dataTransfer.files[0]);
                     }
                 });
             }
 
-            // --- [DIPERBAIKI] Search Logic ---
+            // --- Logika Saran Pencarian Otomatis ---
             const renderSuggestions = (data, container) => {
                 if (!container) return;
                 let html = '';
@@ -192,7 +196,6 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
                     data.categories.forEach(s => html += createSuggestionItem(s, 'category'));
                     html += '</div>';
                 }
-                // ... (bisa ditambahkan grup lain seperti user atau kategori jika perlu)
                 container.innerHTML = html;
                 container.style.display = html ? 'block' : 'none';
             };
@@ -202,30 +205,26 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
                     container.style.display = 'none';
                     return;
                 }
-                // Pastikan Anda membuat file get_search_suggestions.php di path yang benar
                 fetch(`/Gallery_Seni_Online/app/views/user/get_search_suggestions.php?term=${encodeURIComponent(term)}`)
                     .then(res => res.json())
                     .then(data => renderSuggestions(data, container))
                     .catch(err => console.error("Fetch suggestions error:", err));
             };
 
-            // [FUNGSI UTAMA] Fungsi ini sekarang hanya mengarahkan ke dasbor
+            // --- Fungsi Eksekusi Pencarian ---
             const performSearch = (term) => {
                 const searchTerm = term.trim();
                 if (searchTerm !== '') {
-                    // Membuat URL tujuan dan pindah halaman
                     window.location.href = `dashboard_user.php?search=${encodeURIComponent(searchTerm)}`;
                 }
             };
 
             if (searchInput) {
-                // Menampilkan saran saat mengetik
                 searchInput.addEventListener('input', () => {
                     clearTimeout(searchTimeout);
                     searchTimeout = setTimeout(() => handleSearchInput(searchInput.value.trim(), suggestionsContainer), 300);
                 });
 
-                // Menjalankan pencarian saat menekan Enter
                 searchInput.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter') {
                         e.preventDefault();
@@ -235,7 +234,6 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
             }
 
             if (suggestionsContainer) {
-                // Menjalankan pencarian saat salah satu saran diklik
                 suggestionsContainer.addEventListener('click', (e) => {
                     if (e.target.classList.contains('suggestion-item')) {
                         const value = e.target.textContent.replace('@', '');
@@ -244,7 +242,7 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
                 });
             }
 
-            // Klik di luar untuk menutup semua
+            // --- Logika Tutup Dropdown & Saran Pencarian ---
             document.addEventListener('click', (event) => {
                 if (profileBtn && !profileBtn.parentElement.contains(event.target)) {
                     profileDropdown.classList.remove('show');

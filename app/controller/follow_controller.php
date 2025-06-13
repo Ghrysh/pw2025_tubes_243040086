@@ -1,7 +1,5 @@
 <?php
-// handle_follow.php - Versi Final dengan Penanganan Error
-
-// Mengubah semua error PHP menjadi Exception yang bisa ditangkap
+// Penanganan Error PHP Menjadi Exception
 set_error_handler(function ($severity, $message, $file, $line) {
     if (!(error_reporting() & $severity)) {
         return;
@@ -9,40 +7,39 @@ set_error_handler(function ($severity, $message, $file, $line) {
     throw new ErrorException($message, 0, $severity, $file, $line);
 });
 
-// Mulai output buffering untuk memastikan tidak ada output lain
+// Output Buffering & Header JSON
 ob_start();
-// Atur header default ke JSON
 header('Content-Type: application/json');
 
 try {
-    // Mulai session jika belum ada
+    // Inisialisasi Session
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
     }
 
-    // Menggunakan path absolut untuk memastikan file koneksi selalu ditemukan
+    // Koneksi ke Database
     $koneksi_path = __DIR__ . '/../../config/inc_koneksi.php';
     if (!file_exists($koneksi_path)) {
         throw new Exception("File koneksi tidak ditemukan.");
     }
     require_once $koneksi_path;
 
-    // Periksa variabel koneksi
+    // Validasi Variabel Koneksi
     if (!isset($koneksi) || !$koneksi) {
         throw new Exception("Variabel \$koneksi tidak valid.");
     }
 
-    // Periksa login
+    // Validasi Login Pengguna
     if (!isset($_SESSION['id'])) {
         throw new Exception("Akses ditolak. Anda harus login.", 403);
     }
 
-    // Periksa metode request
+    // Validasi Metode Request
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         throw new Exception("Metode request harus POST.", 405);
     }
 
-    // Ambil dan validasi data input
+    // Ambil & Validasi Data Input
     $data = json_decode(file_get_contents('php://input'), true);
     if (json_last_error() !== JSON_ERROR_NONE) {
         throw new Exception("Data JSON yang dikirim tidak valid.", 400);
@@ -59,9 +56,7 @@ try {
         throw new Exception("Anda tidak bisa mengikuti diri sendiri.", 400);
     }
 
-    // --- Logika Inti Database ---
-
-    // Cek apakah sudah follow
+    // Logika Cek & Update Status Follow/Unfollow
     $stmt_check = mysqli_prepare($koneksi, "SELECT id FROM followers WHERE follower_id = ? AND following_id = ?");
     mysqli_stmt_bind_param($stmt_check, "ii", $followerId, $followingId);
     mysqli_stmt_execute($stmt_check);
@@ -70,14 +65,14 @@ try {
     $responseStatus = '';
 
     if ($isFollowing) {
-        // Unfollow
+        // Proses Unfollow
         $stmt = mysqli_prepare($koneksi, "DELETE FROM followers WHERE follower_id = ? AND following_id = ?");
         mysqli_stmt_bind_param($stmt, "ii", $followerId, $followingId);
         if (mysqli_stmt_execute($stmt)) {
             $responseStatus = 'unfollowed';
         }
     } else {
-        // Follow
+        // Proses Follow & Notifikasi
         $stmt = mysqli_prepare($koneksi, "INSERT INTO followers (follower_id, following_id) VALUES (?, ?)");
         mysqli_stmt_bind_param($stmt, "ii", $followerId, $followingId);
         if (mysqli_stmt_execute($stmt)) {
@@ -96,23 +91,23 @@ try {
         throw new Exception("Gagal memperbarui status follow di database.");
     }
 
-    // Ambil jumlah follower baru untuk dikirim kembali ke frontend
+    // Ambil Jumlah Follower Terbaru
     $stmt_count = mysqli_prepare($koneksi, "SELECT COUNT(*) as count FROM followers WHERE following_id = ?");
     mysqli_stmt_bind_param($stmt_count, "i", $followingId);
     mysqli_stmt_execute($stmt_count);
     $newFollowerCount = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt_count))['count'];
 
-    ob_end_clean(); // Hapus buffer jika sukses
+    ob_end_clean();
     echo json_encode([
         'status' => $responseStatus,
         'new_follower_count' => $newFollowerCount
     ]);
 } catch (Exception $e) {
-    ob_end_clean(); // Hapus buffer jika terjadi error
+    ob_end_clean();
     $errorCode = $e->getCode() >= 400 ? $e->getCode() : 500;
     http_response_code($errorCode);
 
-    // Kirim respons JSON yang berisi detail error untuk debugging
+    // Respons Error JSON
     echo json_encode([
         'status' => 'error',
         'message' => 'Terjadi kesalahan pada server.',

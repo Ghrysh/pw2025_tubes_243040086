@@ -1,12 +1,13 @@
 <?php
+// ==========================
+// Mulai Sesi & Koneksi DB
+// ==========================
 session_start();
 require_once '../../../config/inc_koneksi.php';
 
-// =================================================================
-// PROSES LOGIKA PHP
-// =================================================================
-
-// Logika Hapus Gambar
+// ==========================
+// Hapus Gambar Jika Diminta
+// ==========================
 if (isset($_GET['delete'])) {
     $image_id = (int) $_GET['delete'];
     $query_delete = "DELETE FROM images WHERE id = $image_id";
@@ -15,15 +16,18 @@ if (isset($_GET['delete'])) {
     exit;
 }
 
-// Ambil profil user untuk header
+// ==========================
+// Ambil Profil User
+// ==========================
 $user_id = (int) ($_SESSION['id'] ?? 0);
 $profil_query = "SELECT * FROM user_profiles WHERE user_id = $user_id";
 $profil_result = mysqli_query($koneksi, $profil_query);
 $profil = mysqli_fetch_assoc($profil_result);
 $username = $_SESSION['username'] ?? 'Admin';
 
-// Ambil semua data gambar untuk ditampilkan
-// PENTING: Sesuaikan nama tabel dan kolom jika berbeda di database Anda.
+// ==========================
+// Ambil Data Semua Gambar
+// ==========================
 $query_images = "
     SELECT 
         images.id, 
@@ -50,6 +54,9 @@ if ($result_images) {
 <html lang="id">
 
 <head>
+    <!-- ==========================
+         Meta & Link CSS/JS
+    ========================== -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../../../public/assets/css/style_manage_image_admin.css">
@@ -65,6 +72,9 @@ if ($result_images) {
 </head>
 
 <body>
+    <!-- ==========================
+         Sidebar Navigasi
+    ========================== -->
     <aside class="sidebar">
         <a href="dashboard_admin.php" class="sidebar__logo">
             <img src="../../../public/assets/img/loading_logo.png" alt="MizuPix Logo">
@@ -95,6 +105,9 @@ if ($result_images) {
         </nav>
     </aside>
 
+    <!-- ==========================
+         Konten Utama & Header
+    ========================== -->
     <main class="main-content">
         <header class="header">
             <div class="header__title">
@@ -116,6 +129,9 @@ if ($result_images) {
             </div>
         </header>
 
+        <!-- ==========================
+             Widget Daftar Gambar
+        ========================== -->
         <section class="widget-container">
             <div class="card">
                 <div class="card-header">
@@ -147,8 +163,12 @@ if ($result_images) {
         </section>
     </main>
 
+    <!-- ==========================
+         Script JS: Tabel, Sort, Search, Dropdown
+    ========================== -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Data Gambar dari PHP
             const imagesData = <?php echo json_encode($images); ?>;
             const tableBody = document.getElementById('imageTableBody');
             const searchInput = document.getElementById('searchInput');
@@ -158,6 +178,7 @@ if ($result_images) {
                 direction: 'desc'
             };
 
+            // Render Tabel Gambar
             function renderTable(data) {
                 tableBody.innerHTML = '';
 
@@ -179,7 +200,6 @@ if ($result_images) {
                         minute: '2-digit'
                     });
 
-                    // ### PERUBAHAN DI SINI: Tombol Edit telah dihapus dari baris di bawah ini ###
                     tr.innerHTML = `
                     <td>
                         <img src="${image.image_path}" alt="${image.title}" class="table-thumbnail">
@@ -198,6 +218,7 @@ if ($result_images) {
                 });
             }
 
+            // Sorting Data
             function sortData(data, key, direction) {
                 data.sort((a, b) => {
                     const valA = a[key] ? a[key].toString().toLowerCase() : '';
@@ -215,6 +236,7 @@ if ($result_images) {
                 return data;
             }
 
+            // Fitur Pencarian
             searchInput.addEventListener('keyup', () => {
                 const searchTerm = searchInput.value.toLowerCase();
 
@@ -228,6 +250,7 @@ if ($result_images) {
                 renderTable(sortData(filteredData, currentSort.key, currentSort.direction));
             });
 
+            // Fitur Sorting Kolom
             document.querySelectorAll('.sortable').forEach(header => {
                 header.addEventListener('click', () => {
                     const sortKey = header.getAttribute('data-sort');
@@ -248,10 +271,12 @@ if ($result_images) {
                 });
             });
 
+            // Render Awal Tabel
             const sortedInitialData = sortData(imagesData, currentSort.key, currentSort.direction);
             document.querySelector(`[data-sort="${currentSort.key}"]`).classList.add(`sort-${currentSort.direction}`);
             renderTable(sortedInitialData);
 
+            // Dropdown Profil
             const profileBtn = document.querySelector('.profile-btn');
             const profileDropdown = document.querySelector('.profile-dropdown');
 

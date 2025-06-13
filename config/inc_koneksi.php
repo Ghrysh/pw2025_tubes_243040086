@@ -1,4 +1,5 @@
 <?php
+// Koneksi ke Database
 $host  = "localhost";
 $user  = "root";
 $pass  = "";
@@ -9,16 +10,14 @@ if (!$koneksi) {
     die("Koneksi gagal: " . mysqli_connect_error());
 }
 
-// --- LOGIKA VERIFIKASI "INGAT SAYA" ---
-
-// Cek hanya jika pengguna BELUM login (session tidak ada) DAN cookie remember_me ADA
+// Verifikasi Fitur "Ingat Saya"
 if (!isset($_SESSION['id']) && isset($_COOKIE['remember_me'])) {
 
-    // 1. Ambil selector dan validator dari cookie
+    // Ambil Selector dan Validator dari Cookie
     list($selector, $validator) = explode(':', $_COOKIE['remember_me'], 2);
 
     if ($selector && $validator) {
-        // 2. Cari token di database berdasarkan selector
+        // Cari Token Berdasarkan Selector di Database
         $stmt = $koneksi->prepare("SELECT * FROM auth_tokens WHERE selector = ? AND expires >= NOW()");
         $stmt->bind_param("s", $selector);
         $stmt->execute();
@@ -27,18 +26,16 @@ if (!isset($_SESSION['id']) && isset($_COOKIE['remember_me'])) {
         $stmt->close();
 
         if ($token_data) {
-            // 3. Jika token ditemukan, verifikasi validator
+            // Verifikasi Validator Token
             $validator_from_cookie = $validator;
             $hashed_validator_from_db = $token_data['validator_hash'];
 
-            // Cocokkan hash-nya. Gunakan hash_equals untuk keamanan terhadap timing attacks.
             if (hash_equals(hash('sha256', $validator_from_cookie), $hashed_validator_from_db)) {
 
-                // 4. Jika cocok, LOGIN BERHASIL! Buat sesi untuk user.
+                // Login Otomatis dan Buat Sesi Pengguna
                 $user_id = $token_data['user_id'];
 
-                // Ambil data user dari tabel 'login' atau 'admins'
-                // Anda mungkin perlu menyesuaikan query ini sesuai struktur Anda
+                // Ambil Data User dari Tabel Login
                 $stmt_user = $koneksi->prepare("SELECT id, email FROM login WHERE id = ?");
                 $stmt_user->bind_param("i", $user_id);
                 $stmt_user->execute();
@@ -48,10 +45,9 @@ if (!isset($_SESSION['id']) && isset($_COOKIE['remember_me'])) {
                 if ($user_data) {
                     $_SESSION['id'] = $user_data['id'];
                     $_SESSION['email'] = $user_data['email'];
-                    $_SESSION['role'] = 1; // Asumsi user biasa, sesuaikan jika perlu
+                    $_SESSION['role'] = 1;
 
-                    // (Opsional tapi sangat direkomendasikan) Perbarui validator token
-                    // untuk mencegah pencurian cookie jangka panjang (token rotation)
+                    // Rotasi Validator Token (Token Rotation)
                     $new_validator = bin2hex(random_bytes(32));
                     $new_validator_hash = hash('sha256', $new_validator);
                     $stmt_update = $koneksi->prepare("UPDATE auth_tokens SET validator_hash = ? WHERE selector = ?");
@@ -59,11 +55,11 @@ if (!isset($_SESSION['id']) && isset($_COOKIE['remember_me'])) {
                     $stmt_update->execute();
                     $stmt_update->close();
 
-                    // Perbarui cookie dengan validator baru
+                    // Perbarui Cookie dengan Validator Baru
                     setcookie('remember_me', $selector . ':' . $new_validator, time() + (86400 * 30), "/");
                 }
             } else {
-                // Jika validator tidak cocok, hapus token dari DB
+                // Hapus Token Jika Validator Tidak Cocok
                 $stmt_del = $koneksi->prepare("DELETE FROM auth_tokens WHERE selector = ?");
                 $stmt_del->bind_param("s", $selector);
                 $stmt_del->execute();

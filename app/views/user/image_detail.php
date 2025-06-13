@@ -1,13 +1,16 @@
 <?php
+// --- [SESSION & INISIALISASI] ---
 session_start();
 require_once '../../../config/inc_koneksi.php';
 require_once '../../controller/detail_controller.php';
 
+// --- [CEK ID GAMBAR] ---
 if (!isset($_GET['id'])) {
     header("Location: dashboard_user.php");
     exit;
 }
 
+// --- [AMBIL DATA GAMBAR & USER] ---
 $imageId = (int)$_GET['id'];
 $currentUserId = $_SESSION['id'] ?? null;
 
@@ -19,6 +22,7 @@ if (!$image) {
 $comments = getComments($imageId, $koneksi);
 $recommendedImages = getRecommendedImages($imageId, 12, $koneksi);
 
+// --- [AMBIL PROFIL USER SAAT INI] ---
 $myProfile = null;
 if ($currentUserId) {
     $stmt_myprofile = mysqli_prepare($koneksi, "SELECT foto FROM user_profiles WHERE user_id = ?");
@@ -34,6 +38,7 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
 <html lang="id">
 
 <head>
+    <!-- [HEADER & LINK CSS/JS] -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($image['title']); ?> - MizuPix</title>
@@ -48,17 +53,20 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
 
 <body>
     <?php
+    // --- [NAVBAR] ---
     include('../navbar/navbar.php');
     ?>
 
     <main class="main-container">
         <div class="detail-card">
             <div class="image-display-container">
+                <!-- [TAMPILKAN GAMBAR UTAMA] -->
                 <img src="<?php echo htmlspecialchars($image['image_path']); ?>" alt="<?php echo htmlspecialchars($image['title']); ?>">
             </div>
 
             <div class="info-sidebar">
                 <div class="action-header">
+                    <!-- [TOMBOL AKSI ATAS: BAGIKAN, UNDUH, SIMPAN] -->
                     <div class="header-icons">
                         <button class="icon-button share-btn" title="Bagikan"><i class='bx bx-share'></i></button>
                         <a href="<?php echo htmlspecialchars($image['image_path']); ?>" download class="icon-button" title="Unduh"><i class='bx bxs-download'></i></a>
@@ -70,6 +78,7 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
                 </div>
 
                 <div class="uploader-info">
+                    <!-- [INFO PENGUPLOAD] -->
                     <a href="public_profile.php?username=<?php echo htmlspecialchars($image['username']); ?>" class="author-link">
                         <img src="<?php echo htmlspecialchars($image['user_photo'] ?? $defaultPhotoPath); ?>" alt="Author Avatar" class="author-avatar">
                         <div class="author-text">
@@ -81,11 +90,13 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
 
                 <div class="scrollable-content">
                     <div class="image-info">
+                        <!-- [JUDUL & DESKRIPSI GAMBAR] -->
                         <h1 class="image-title"><?php echo htmlspecialchars($image['title']); ?></h1>
                         <p class="image-description"><?php echo nl2br(htmlspecialchars($image['caption'] ?? 'Tidak ada deskripsi.')); ?></p>
                     </div>
 
                     <div class="comment-section">
+                        <!-- [DAFTAR KOMENTAR] -->
                         <h3 id="comment-count-display"><?php echo $image['comment_count']; ?> Komentar</h3>
                         <div class="comment-list">
                             <?php foreach ($comments as $comment): ?>
@@ -106,6 +117,7 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
                 </div>
 
                 <div class="action-footer">
+                    <!-- [AKSI BAWAH: LIKE, KOMENTAR, LIKE BUTTON] -->
                     <div class="like-info">
                         <strong><?php echo $image['like_count']; ?></strong> Suka
                     </div>
@@ -122,6 +134,7 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
         </div>
 
         <div class="recommendation-section">
+            <!-- [REKOMENDASI GAMBAR LAIN] -->
             <h2>Karya lain yang mungkin Anda sukai</h2>
             <div class="image-gallery">
                 <?php foreach ($recommendedImages as $rec_image): ?>
@@ -138,8 +151,8 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
     <div id="toast-notification" class="toast-notification"></div>
 
     <script>
+        // --- [INISIALISASI DOM & VARIABEL] ---
         document.addEventListener('DOMContentLoaded', function() {
-            // --- Elemen DOM ---
             const profileBtn = document.querySelector('.profile-btn');
             const profileDropdown = document.getElementById('profile-menu');
             const likeBtn = document.querySelector('.like-btn');
@@ -151,7 +164,7 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
             const searchWrapper = document.querySelector('.search-wrapper');
             let searchTimeout = null;
 
-            // --- Dropdown Profil ---
+            // --- [DROPDOWN PROFIL] ---
             if (profileBtn) {
                 profileBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -159,7 +172,7 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
                 });
             }
 
-            // --- Aksi Like ---
+            // --- [AKSI LIKE GAMBAR] ---
             if (likeBtn) {
                 likeBtn.addEventListener('click', function() {
                     const imageId = this.dataset.imageId;
@@ -181,7 +194,6 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
                                 this.classList.remove('liked');
                                 this.querySelector('i').className = 'bx bx-heart';
                             }
-                            // Update jumlah like
                             const likeCountElement = document.querySelector('.like-info strong');
                             if (likeCountElement) {
                                 likeCountElement.textContent = data.like_count;
@@ -190,7 +202,7 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
                 });
             }
 
-            // --- Aksi Simpan/Bookmark ---
+            // --- [AKSI SIMPAN/BOOKMARK] ---
             if (saveBtn) {
                 saveBtn.addEventListener('click', function() {
                     const imageId = this.dataset.imageId;
@@ -221,7 +233,7 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
                 });
             }
 
-            // --- Aksi Komentar ---
+            // --- [AKSI KIRIM KOMENTAR] ---
             if (commentForm) {
                 commentForm.addEventListener('submit', function(e) {
                     e.preventDefault();
@@ -248,16 +260,13 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
                         .then(data => {
                             if (data.status === 'success') {
                                 const commentList = document.querySelector('.comment-list');
-                                // Tambahkan komentar baru ke daftar
                                 commentList.insertAdjacentHTML('afterbegin', data.comment_html);
 
-                                // Perbarui jumlah komentar
                                 const commentCountElement = document.getElementById('comment-count-display');
                                 if (commentCountElement) {
                                     commentCountElement.textContent = `${data.comment_count} Komentar`;
                                 }
 
-                                // Kosongkan input
                                 commentInput.value = '';
                             } else {
                                 alert(data.message || 'Gagal mengirim komentar.');
@@ -265,12 +274,12 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
                         })
                         .catch(error => console.error('Comment Fetch Error:', error))
                         .finally(() => {
-                            submitButton.disabled = false; // Aktifkan kembali tombol
+                            submitButton.disabled = false;
                         });
                 });
             }
 
-            // --- [DIPERBAIKI] Logika Notifikasi Toast & Salin Link ---
+            // --- [NOTIFIKASI TOAST & SALIN LINK] ---
             function showToast(message, type = 'success') {
                 const toast = document.getElementById('toast-notification');
                 if (toast) {
@@ -331,7 +340,7 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
                 shareBtn.addEventListener('click', copyLinkToClipboard);
             }
 
-            // --- [DIPERBAIKI] Search Logic ---
+            // --- [LOGIKA SEARCH & SUGGESTION] ---
             const renderSuggestions = (data, container) => {
                 if (!container) return;
                 let html = '';
@@ -352,7 +361,6 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
                     data.categories.forEach(s => html += createSuggestionItem(s, 'category'));
                     html += '</div>';
                 }
-                // ... (bisa ditambahkan grup lain seperti user atau kategori jika perlu)
                 container.innerHTML = html;
                 container.style.display = html ? 'block' : 'none';
             };
@@ -362,30 +370,26 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
                     container.style.display = 'none';
                     return;
                 }
-                // Pastikan Anda membuat file get_search_suggestions.php di path yang benar
                 fetch(`/Gallery_Seni_Online/app/views/user/get_search_suggestions.php?term=${encodeURIComponent(term)}`)
                     .then(res => res.json())
                     .then(data => renderSuggestions(data, container))
                     .catch(err => console.error("Fetch suggestions error:", err));
             };
 
-            // [FUNGSI UTAMA] Fungsi ini sekarang hanya mengarahkan ke dasbor
+            // --- [FUNGSI PENCARIAN] ---
             const performSearch = (term) => {
                 const searchTerm = term.trim();
                 if (searchTerm !== '') {
-                    // Membuat URL tujuan dan pindah halaman
                     window.location.href = `dashboard_user.php?search=${encodeURIComponent(searchTerm)}`;
                 }
             };
 
             if (searchInput) {
-                // Menampilkan saran saat mengetik
                 searchInput.addEventListener('input', () => {
                     clearTimeout(searchTimeout);
                     searchTimeout = setTimeout(() => handleSearchInput(searchInput.value.trim(), suggestionsContainer), 300);
                 });
 
-                // Menjalankan pencarian saat menekan Enter
                 searchInput.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter') {
                         e.preventDefault();
@@ -395,7 +399,6 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
             }
 
             if (suggestionsContainer) {
-                // Menjalankan pencarian saat salah satu saran diklik
                 suggestionsContainer.addEventListener('click', (e) => {
                     if (e.target.classList.contains('suggestion-item')) {
                         const value = e.target.textContent.replace('@', '');
@@ -404,7 +407,7 @@ $userPhoto = ($myProfile && !empty($myProfile['foto'])) ? htmlspecialchars($myPr
                 });
             }
 
-            // --- Klik di luar untuk menutup semua dropdown ---
+            // --- [TUTUP DROPDOWN & SUGGESTION JIKA KLIK DI LUAR] ---
             document.addEventListener('click', (event) => {
                 if (profileBtn && !profileBtn.parentElement.contains(event.target)) {
                     profileDropdown.classList.remove('show');

@@ -1,3 +1,4 @@
+/* Body dan Tata Letak Utama */
 body {
   font-family: "Segoe UI", sans-serif;
   margin: 0;
@@ -7,6 +8,7 @@ body {
   flex-direction: column;
 }
 
+/* Topbar Navigasi */
 .topbar {
   background: #ffffff;
   padding: 1em 2em;
@@ -21,10 +23,12 @@ body {
   z-index: 1000;
 }
 
+/* Ikon Pengguna di Topbar */
 .user-icon {
   font-size: 1.5em;
 }
 
+/* Logo di Topbar */
 .logo {
   display: flex;
   align-items: center;
@@ -38,6 +42,7 @@ body {
   display: block;
 }
 
+/* Sidebar Navigasi */
 .sidebar {
   background: #ffffff;
   color: rgb(175, 175, 175);
@@ -68,12 +73,13 @@ body {
   gap: 0.5em;
 }
 
+/* Kontainer Konten Utama */
 .container {
   margin-left: 200px;
   padding: 100px 2em 2em;
 }
 
-/* Tabel pengguna */
+/* Tabel Pengguna */
 .user-table {
   width: 100%;
   border-collapse: collapse;

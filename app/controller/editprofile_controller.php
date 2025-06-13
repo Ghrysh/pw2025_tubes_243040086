@@ -1,5 +1,5 @@
 <?php
-// Pastikan session sudah dimulai
+// --- Inisialisasi Session dan Variabel Utama ---
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
@@ -7,10 +7,9 @@ if (session_status() == PHP_SESSION_NONE) {
 $routeApps = $_SERVER['DOCUMENT_ROOT'] . '/Gallery_Seni_Online';
 $appsName = "Gallery_Seni_Online";
 
-// Hanya butuh satu kali pemanggilan koneksi
 require_once $routeApps . '/config/inc_koneksi.php';
 
-// --- FUNGSI UNTUK MENGAMBIL DATA ---
+// --- Fungsi: Mengambil Data Profil User ---
 
 function getProfilUser($id, $koneksi)
 {
@@ -21,6 +20,8 @@ function getProfilUser($id, $koneksi)
     return mysqli_fetch_assoc($result);
 }
 
+// --- Fungsi: Mengambil Data Username User ---
+
 function getUser($id, $koneksi)
 {
     $stmt = mysqli_prepare($koneksi, "SELECT username FROM login WHERE id = ?");
@@ -30,6 +31,7 @@ function getUser($id, $koneksi)
     return mysqli_fetch_assoc($result);
 }
 
+// --- Fungsi: Proses Update Profil User ---
 
 function processProfileUpdate($id, $postData, $fileData, $koneksi)
 {
@@ -37,7 +39,9 @@ function processProfileUpdate($id, $postData, $fileData, $koneksi)
     $tentang = mysqli_real_escape_string($koneksi, $postData['tentang']);
     $situs_web = mysqli_real_escape_string($koneksi, $postData['situs_web']);
     $username = mysqli_real_escape_string($koneksi, $postData['username']);
-    // Cek apakah username sudah ada
+
+    // --- Validasi Username Unik ---
+
     $stmt_cek_username = mysqli_prepare($koneksi, "SELECT COUNT(*) FROM login WHERE username = ? AND id != ?");
     mysqli_stmt_bind_param($stmt_cek_username, "si", $username, $id);
     mysqli_stmt_execute($stmt_cek_username);
@@ -49,7 +53,8 @@ function processProfileUpdate($id, $postData, $fileData, $koneksi)
         return;
     }
 
-    // Cek apakah user sudah punya profil
+    // --- Cek Apakah Profil Sudah Ada ---
+
     $stmt_cek = mysqli_prepare($koneksi, "SELECT COUNT(*) FROM user_profiles WHERE user_id = ?");
     mysqli_stmt_bind_param($stmt_cek, "i", $id);
     mysqli_stmt_execute($stmt_cek);
@@ -57,17 +62,19 @@ function processProfileUpdate($id, $postData, $fileData, $koneksi)
     $row = mysqli_fetch_row($result);
     $count = $row[0];
 
+    // --- Update atau Insert Data Profil ---
+
     if ($count > 0) {
-        // User sudah punya profil, lakukan UPDATE
         $stmt_profil = mysqli_prepare($koneksi, "UPDATE user_profiles SET nama_lengkap = ?, tentang = ?, situs_web = ? WHERE user_id = ?");
         mysqli_stmt_bind_param($stmt_profil, "sssi", $nama_lengkap, $tentang, $situs_web, $id);
         $profilUpdated = mysqli_stmt_execute($stmt_profil);
     } else {
-        // User belum punya profil, lakukan INSERT
         $stmt_profil = mysqli_prepare($koneksi, "INSERT INTO user_profiles (user_id, nama_lengkap, tentang, situs_web) VALUES (?, ?, ?, ?)");
         mysqli_stmt_bind_param($stmt_profil, "isss", $id, $nama_lengkap, $tentang, $situs_web);
         $profilUpdated = mysqli_stmt_execute($stmt_profil);
     }
+
+    // --- Update Username di Tabel Login ---
 
     $stmt_login = mysqli_prepare($koneksi, "UPDATE login SET username = ? WHERE id = ?");
     mysqli_stmt_bind_param($stmt_login, "si", $username, $id);
@@ -78,7 +85,8 @@ function processProfileUpdate($id, $postData, $fileData, $koneksi)
         return;
     }
 
-    // 2. Proses upload foto HANYA jika ada file baru
+    // --- Proses Upload Foto Profil ---
+
     if (isset($fileData['foto']) && $fileData['foto']['error'] == UPLOAD_ERR_OK) {
         $foto = $fileData['foto'];
         $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/Gallery_Seni_Online/public/assets/img/profile_user/';
@@ -122,10 +130,14 @@ function processProfileUpdate($id, $postData, $fileData, $koneksi)
         }
     }
 
+    // --- Notifikasi Berhasil ---
+
     if (!isset($_SESSION['notification'])) {
         $_SESSION['notification'] = ['type' => 'success', 'message' => 'Profil berhasil diperbarui!'];
     }
 }
+
+// --- Fungsi: Hapus Foto Profil User ---
 
 function deleteProfilePhoto($id, $koneksi)
 {
@@ -149,21 +161,19 @@ function deleteProfilePhoto($id, $koneksi)
     }
 }
 
+// --- Main Logic: Proses Request POST ---
 
-// --- Main Logic ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = $_SESSION['id'];
 
     if (isset($_POST['simpan'])) {
         processProfileUpdate($id, $_POST, $_FILES, $koneksi);
-        // PERBAIKAN: Redirect setelah proses selesai
         header("Location: ../views/user/profile_user.php");
         exit();
     }
 
     if (isset($_POST['hapus_foto'])) {
         deleteProfilePhoto($id, $koneksi);
-        // PERBAIKAN: Redirect setelah proses selesai
         header("Location: ../views/user/profile_user.php");
         exit();
     }

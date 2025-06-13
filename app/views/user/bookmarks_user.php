@@ -1,8 +1,10 @@
 <?php
+// --- [Inisialisasi Sesi & Koneksi Database] ---
 session_start();
 require_once '../../../config/inc_koneksi.php';
 require_once '../../controller/bookmark_controller.php';
 
+// --- [Cek Autentikasi User] ---
 if (!isset($_SESSION['id'])) {
     header("Location: ../login/login.php");
     exit;
@@ -11,6 +13,7 @@ if (!isset($_SESSION['id'])) {
 $id = (int)$_SESSION['id'];
 $searchQuery = $_GET['search'] ?? '';
 
+// --- [Fungsi Mengambil Profil User] ---
 function getMyProfile($id, $koneksi)
 {
     $stmt = mysqli_prepare($koneksi, "SELECT foto FROM user_profiles WHERE user_id = ?");
@@ -20,6 +23,7 @@ function getMyProfile($id, $koneksi)
     return mysqli_fetch_assoc($result);
 }
 
+// --- [Ambil Data Profil dan Bookmark User] ---
 $profil = getMyProfile($id, $koneksi);
 $bookmarkedImages = getBookmarkedImages($id, $koneksi, $searchQuery);
 $defaultPhotoPath = '/Gallery_Seni_Online/public/assets/img/profile_user/blank-profile.png';
@@ -29,6 +33,7 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
 <html lang="id">
 
 <head>
+    <!-- [Meta & Link CSS/Font] -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gambar Tersimpan - MizuPix</title>
@@ -43,15 +48,18 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
 
 <body>
     <?php
+    // --- [Navbar] ---
     include('../navbar/navbar.php');
     ?>
 
     <main class="main-container">
+        <!-- [Header Halaman] -->
         <div class="page-header">
             <h1>Gambar Tersimpan</h1>
             <p>Semua inspirasi yang telah Anda kumpulkan di satu tempat.</p>
         </div>
 
+        <!-- [Galeri Gambar Tersimpan] -->
         <div class="image-gallery">
             <?php if (!empty($bookmarkedImages)): ?>
                 <?php foreach ($bookmarkedImages as $image): ?>
@@ -73,6 +81,7 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
                     </div>
                 <?php endforeach; ?>
             <?php else: ?>
+                <!-- [Tampilan Jika Bookmark Kosong] -->
                 <div class="empty-state">
                     <i class='bx bx-bookmark-alt-minus'></i>
                     <h2>Belum Ada yang Disimpan</h2>
@@ -89,6 +98,7 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
     </main>
 
     <script>
+        // --- [Dropdown Profil & Event Global] ---
         document.addEventListener('DOMContentLoaded', function() {
             const profileBtn = document.querySelector('.profile-btn');
             const profileDropdown = document.getElementById('profile-menu');
@@ -109,10 +119,9 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
                 }
             });
 
-            // Script untuk menangani penghapusan bookmark
+            // --- [Logika Hapus Bookmark] ---
             document.querySelectorAll('.unsave-btn').forEach(button => {
                 button.addEventListener('click', function(e) {
-                    // e.preventDefault(); // Tidak lagi wajib, tapi bagus untuk ada
                     const card = this.closest('.gallery-card');
                     const imageId = this.dataset.imageId;
 
@@ -134,7 +143,6 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
                             if (data.status === 'removed') {
                                 setTimeout(() => {
                                     card.remove();
-                                    // ... Logika cek galeri kosong tidak berubah ...
                                 }, 400);
                             } else {
                                 card.style.opacity = '1';
@@ -149,7 +157,7 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
                 });
             });
 
-            // --- [DIPERBAIKI] Search Logic ---
+            // --- [Logika Saran Pencarian] ---
             const renderSuggestions = (data, container) => {
                 if (!container) return;
                 let html = '';
@@ -170,7 +178,6 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
                     data.categories.forEach(s => html += createSuggestionItem(s, 'category'));
                     html += '</div>';
                 }
-                // ... (bisa ditambahkan grup lain seperti user atau kategori jika perlu)
                 container.innerHTML = html;
                 container.style.display = html ? 'block' : 'none';
             };
@@ -180,30 +187,26 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
                     container.style.display = 'none';
                     return;
                 }
-                // Pastikan Anda membuat file get_search_suggestions.php di path yang benar
                 fetch(`/Gallery_Seni_Online/app/views/user/get_search_suggestions.php?term=${encodeURIComponent(term)}`)
                     .then(res => res.json())
                     .then(data => renderSuggestions(data, container))
                     .catch(err => console.error("Fetch suggestions error:", err));
             };
 
-            // [FUNGSI UTAMA] Fungsi ini sekarang hanya mengarahkan ke dasbor
+            // --- [Fungsi Pencarian] ---
             const performSearch = (term) => {
                 const searchTerm = term.trim();
                 if (searchTerm !== '') {
-                    // Membuat URL tujuan dan pindah halaman
                     window.location.href = `dashboard_user.php?search=${encodeURIComponent(searchTerm)}`;
                 }
             };
 
             if (searchInput) {
-                // Menampilkan saran saat mengetik
                 searchInput.addEventListener('input', () => {
                     clearTimeout(searchTimeout);
                     searchTimeout = setTimeout(() => handleSearchInput(searchInput.value.trim(), suggestionsContainer), 300);
                 });
 
-                // Menjalankan pencarian saat menekan Enter
                 searchInput.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter') {
                         e.preventDefault();
@@ -213,7 +216,6 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
             }
 
             if (suggestionsContainer) {
-                // Menjalankan pencarian saat salah satu saran diklik
                 suggestionsContainer.addEventListener('click', (e) => {
                     if (e.target.classList.contains('suggestion-item')) {
                         const value = e.target.textContent.replace('@', '');
@@ -222,7 +224,7 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
                 });
             }
 
-            // --- Klik di luar untuk menutup semua dropdown ---
+            // --- [Tutup Dropdown Jika Klik di Luar] ---
             document.addEventListener('click', (event) => {
                 if (profileBtn && !profileBtn.parentElement.contains(event.target)) {
                     profileDropdown.classList.remove('show');

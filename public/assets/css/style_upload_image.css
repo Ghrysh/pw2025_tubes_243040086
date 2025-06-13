@@ -1,8 +1,4 @@
-/* File: style_upload_modern.css (Versi 2.0 - Adaptive Frame) */
-
-/* =================================================================== */
-/* === BAGIAN 1: GAYA DASAR (DARI DASBOR) === */
-/* =================================================================== */
+/* === Variabel Warna dan Dasar === */
 
 :root {
   --color-primary: #3b82f6;
@@ -50,9 +46,7 @@ body {
   }
 }
 
-/* =================================================================== */
-/* === BAGIAN 2: GAYA KHUSUS HALAMAN UNGGAH GAMBAR === */
-/* =================================================================== */
+/* === Tata Letak Kontainer Utama dan Kartu Upload === */
 
 .main-container {
   display: flex;
@@ -85,28 +79,31 @@ body {
   margin-top: 0.25rem;
 }
 
+/* === Grid Form Upload === */
+
 .upload-form {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2.5rem;
 }
 
-/* --- [DIUBAH] Area Unggah Gambar Adaptif --- */
+/* === Area Frame Upload Gambar === */
+
 .image-upload-label {
   cursor: pointer;
 }
 .image-upload-frame {
   border: 2px dashed var(--color-border);
   border-radius: 0.75rem;
-  display: flex; /* Hanya untuk placeholder */
-  justify-content: center; /* Hanya untuk placeholder */
-  align-items: center; /* Hanya untuk placeholder */
+  display: flex;
+  justify-content: center;
+  align-items: center;
   overflow: hidden;
   background-color: var(--color-background);
   transition: all 0.2s ease;
   width: 100%;
-  height: 100%; /* Biarkan tinggi mengikuti flex container */
-  min-height: 350px; /* Tinggi minimal saat kosong */
+  height: 100%;
+  min-height: 350px;
   position: relative;
 }
 .image-upload-frame:hover,
@@ -142,18 +139,19 @@ body {
 .img-preview {
   display: none;
   width: 100%;
-  height: auto; /* KUNCI: Membuat gambar menjaga rasio aspek */
+  height: auto;
   border-radius: 0.75rem;
 }
 
-/* --- [DIUBAH] Logika saat gambar dipilih --- */
+/* === Logika Saat Gambar Dipilih === */
+
 .image-upload-frame.has-image {
-  min-height: auto; /* Hapus tinggi minimal */
-  height: auto; /* Biarkan container mengikuti tinggi gambar */
+  min-height: auto;
+  height: auto;
   border: 1px solid var(--color-border);
   background-color: var(--color-muted-bg);
-  display: block; /* Ubah dari flex ke block */
-  padding: 0.25rem; /* Beri sedikit padding di sekitar gambar */
+  display: block;
+  padding: 0.25rem;
 }
 .image-upload-frame.has-image .upload-placeholder {
   display: none;
@@ -165,7 +163,8 @@ input[type="file"] {
   display: none;
 }
 
-/* --- Form Inputs --- */
+/* === Form Input dan Grup === */
+
 .form-right {
   display: flex;
   flex-direction: column;
@@ -202,7 +201,8 @@ textarea {
   resize: vertical;
 }
 
-/* Custom Select Dropdown */
+/* === Custom Select Dropdown === */
+
 .select-wrapper {
   position: relative;
 }
@@ -223,7 +223,8 @@ select {
   padding-right: 2.5rem;
 }
 
-/* --- Tombol & Pesan Status --- */
+/* === Tombol dan Pesan Status === */
+
 .btn {
   padding: 0.8rem 1.5rem;
   border-radius: 0.5rem;
@@ -268,7 +269,8 @@ select {
   border-color: var(--error-border);
 }
 
-/* --- Responsive --- */
+/* === Responsif (Mobile & Tablet) === */
+
 @media (max-width: 1024px) {
   .upload-form {
     grid-template-columns: 1fr;

@@ -1,8 +1,4 @@
-/* File: style_app.css (Versi Master Final 6.0 - Pengembalian FAB & Modal) */
-
-/* =================================================================== */
-/* === BAGIAN 1: PONDASI & GAYA DASAR === */
-/* =================================================================== */
+/* === PONDASI & GAYA DASAR === */
 
 :root {
   --color-primary: #3b82f6;
@@ -81,9 +77,8 @@ body {
   width: 100%;
 }
 
-/* =================================================================== */
-/* === BAGIAN 3: GAYA HALAMAN & KOMPONEN SPESIFIK === */
-/* =================================================================== */
+/* === GAYA HALAMAN & KOMPONEN SPESIFIK === */
+
 .main-container,
 .main-container-profile {
   padding: 2rem 1.5rem 5rem;
@@ -219,9 +214,8 @@ body {
   column-count: 3;
 }
 
-/* =================================================================== */
-/* === BAGIAN 4: FAB & MODAL === */
-/* =================================================================== */
+/* === FAB & MODAL === */
+
 .fab-container {
   position: fixed;
   bottom: 2rem;
@@ -379,9 +373,8 @@ body {
   box-shadow: 0 0 0 3px var(--color-primary-light);
 }
 
-/* =================================================================== */
-/* === BAGIAN 5: RESPONSIVE === */
-/* =================================================================== */
+/* === RESPONSIVE === */
+
 @media (max-width: 1024px) {
   .image-gallery {
     column-count: 3;

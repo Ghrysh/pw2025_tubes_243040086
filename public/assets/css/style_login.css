@@ -1,3 +1,4 @@
+/* === Variabel Warna Utama === */
 :root {
   --primary-color: #4f46e5;
   --primary-hover: #4338ca;
@@ -11,6 +12,7 @@
   --error-color: #ef4444;
 }
 
+/* === Reset CSS Dasar === */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -24,16 +26,16 @@ body {
   line-height: 1.6;
 }
 
-/* --- Layout Utama (Desktop First) --- */
+/* === Layout Utama (Desktop) === */
 .login-page-container {
   display: flex;
   min-height: 100vh;
 }
 
-/* --- Sisi Visual (Kiri) --- */
+/* === Bagian Visual Kiri === */
 .login-visual {
   flex-basis: 50%;
-  background-image: url("../img/background_login.jpg"); /* Pastikan path ini benar */
+  background-image: url("../img/background_login.jpg");
   background-size: cover;
   background-position: center;
   position: relative;
@@ -66,7 +68,7 @@ body {
   opacity: 0.9;
 }
 
-/* --- Sisi Form (Kanan) --- */
+/* === Bagian Form Kanan === */
 .login-form-wrapper {
   flex-basis: 50%;
   display: flex;
@@ -97,7 +99,7 @@ body {
   margin-top: 0.5rem;
 }
 
-/* --- Notifikasi Error --- */
+/* === Notifikasi Error === */
 .notification.is-error {
   display: flex;
   align-items: center;
@@ -115,7 +117,7 @@ body {
   font-size: 1.25rem;
 }
 
-/* --- Notifikasi Sukses --- */
+/* === Notifikasi Sukses === */
 .notification.is-success {
   display: flex;
   align-items: center;
@@ -133,7 +135,7 @@ body {
   font-size: 1.25rem;
 }
 
-/* --- Form --- */
+/* === Form Input === */
 .form-group {
   margin-bottom: 1.25rem;
 }
@@ -170,7 +172,7 @@ body {
   background-color: #fff;
 }
 
-/* --- Styling MODERN untuk Opsi Tambahan (Remember Me & Lupa Password) --- */
+/* === Opsi Tambahan (Remember Me & Lupa Password) === */
 .form-options {
   display: flex;
   justify-content: space-between;
@@ -253,7 +255,7 @@ body {
   text-decoration: none;
 }
 
-/* --- Tombol Login & Footer --- */
+/* === Tombol Login & Footer === */
 .btn-login {
   width: 100%;
   padding: 0.9rem;
@@ -293,70 +295,61 @@ body {
   text-decoration: underline;
 }
 
-/******************************************************
- * BAGIAN RESPONSIVE BARU (MULAI DARI SINI)
- ******************************************************/
-
-/* --- Tampilan Tablet (Layar di bawah 992px) --- */
+/* === Responsive: Tablet (max-width: 992px) === */
 @media (max-width: 992px) {
   .login-page-container {
-    flex-direction: column; /* Mengubah layout menjadi vertikal (atas-bawah) */
+    flex-direction: column;
   }
 
   .login-visual {
-    flex-basis: auto; /* Ukuran tinggi otomatis */
-    min-height: 250px; /* Tinggi minimal untuk sisi visual */
+    flex-basis: auto;
+    min-height: 250px;
     padding: 2rem;
     text-align: center;
-    align-items: center; /* Menengahkan konten visual */
+    align-items: center;
   }
 
   .visual-content {
-    margin: auto; /* Trik untuk menengahkan konten */
+    margin: auto;
     max-width: 500px;
   }
 
   .visual-content h1 {
-    font-size: 2.25rem; /* Ukuran font sedikit dikecilkan */
+    font-size: 2.25rem;
   }
 
   .login-form-wrapper {
-    flex-grow: 1; /* Biarkan bagian form mengisi sisa ruang */
-    padding: 3rem 2rem; /* Padding lebih besar di atas bawah */
+    flex-grow: 1;
+    padding: 3rem 2rem;
   }
 }
 
-/* --- Tampilan Handphone (Layar di bawah 768px) --- */
+/* === Responsive: Handphone (max-width: 767px) === */
 @media (max-width: 767px) {
-  /*
-   * PENTING: Sembunyikan bagian visual sepenuhnya di mobile
-   * agar pengguna bisa langsung fokus ke form login.
-   */
   .login-visual {
     display: none;
   }
 
   .login-form-wrapper {
-    /* Pastikan bagian form memenuhi seluruh layar */
     flex-basis: 100%;
-    min-height: 100vh; /* Tinggi penuh agar konten di tengah vertikal */
-    padding: 1.5rem; /* Kurangi padding untuk layar kecil */
+    min-height: 100vh;
+    padding: 1.5rem;
   }
 
   .login-form-container {
-    max-width: 100%; /* Form mengisi container */
+    max-width: 100%;
   }
 
   .form-header h2 {
-    font-size: 1.5rem; /* Ukuran judul lebih kecil */
+    font-size: 1.5rem;
   }
 }
 
-/* --- Perbaikan kecil untuk layar sangat kecil (di bawah 400px) --- */
+/* === Responsive: Layar Sangat Kecil (max-width: 400px) === */
 @media (max-width: 400px) {
   .form-options {
     flex-direction: column;
-    align-items: flex-start; /* Ratakan ke kiri */
-    gap: 1rem; /* Beri jarak antar elemen */
+    align-items: flex-start;
+    gap: 1rem;
   }
 }

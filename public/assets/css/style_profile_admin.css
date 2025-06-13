@@ -1,6 +1,4 @@
-/* public/assets/css/new_admin_style.css */
-
-/* === ROOT VARIABLES === */
+/* === VARIABEL ROOT === */
 :root {
   --primary-dark: #1a2e4c;
   --primary-light: #f8f9fa;
@@ -17,7 +15,7 @@
   --header-height: 80px;
 }
 
-/* === GENERAL RESET & BODY === */
+/* === RESET UMUM & BODY === */
 * {
   margin: 0;
   padding: 0;
@@ -95,7 +93,7 @@ ul {
   box-shadow: 0 4px 15px rgba(74, 144, 226, 0.4);
 }
 
-/* === MAIN CONTENT & HEADER === */
+/* === KONTEN UTAMA & HEADER === */
 .main-content {
   margin-left: var(--sidebar-width);
   padding: 0 2rem 2rem 2rem;
@@ -122,7 +120,7 @@ ul {
   color: var(--text-secondary);
 }
 
-/* === BUTTONS & ALERTS === */
+/* === TOMBOL & ALERT === */
 .btn {
   padding: 0.75rem 1.5rem;
   border: none;
@@ -184,7 +182,7 @@ ul {
   margin: 0;
 }
 
-/* === LAYOUT & CARDS === */
+/* === LAYOUT & KARTU === */
 .profile-grid-container {
   display: grid;
   grid-template-columns: 1fr 2fr;
@@ -214,7 +212,7 @@ ul {
   padding: 1.5rem;
 }
 
-/* === FORM STYLES === */
+/* === FORMULIR === */
 .form-layout {
   display: flex;
   flex-direction: column;
@@ -248,7 +246,7 @@ ul {
   box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
 }
 
-/* === PROFILE PAGE STYLES (NEW) === */
+/* === HALAMAN PROFIL === */
 .profile-photo-section {
   display: flex;
   flex-direction: column;
@@ -276,17 +274,17 @@ ul {
   color: #ccc;
 }
 .form-control-file {
-  display: none; /* Sembunyikan input file default */
+  display: none;
 }
 #file-chosen {
   font-style: italic;
   font-size: 0.9rem;
   color: var(--text-secondary);
   text-align: center;
-  margin-top: -1rem; /* Tarik lebih dekat ke tombol */
+  margin-top: -1rem;
 }
 
-/* === RESPONSIVE === */
+/* === RESPONSIF === */
 @media (max-width: 992px) {
   .profile-grid-container {
     grid-template-columns: 1fr;

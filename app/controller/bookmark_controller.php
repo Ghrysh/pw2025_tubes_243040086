@@ -1,14 +1,10 @@
 <?php
-// File: app/controller/bookmark_controller.php
-
+// === Session Start ===
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-/**
- * Menyimpan atau menghapus bookmark.
- * (Fungsi ini tidak diubah, sudah benar)
- */
+// === Toggle Bookmark Function ===
 function toggleBookmark($userId, $imageId, $koneksi)
 {
     // Cek apakah sudah dibookmark
@@ -38,15 +34,11 @@ function toggleBookmark($userId, $imageId, $koneksi)
     }
 }
 
-/**
- * [DIPERBAIKI] Mengambil semua gambar yang di-bookmark oleh pengguna,
- * sekarang dengan data username dan fungsionalitas pencarian.
- */
+// === Get Bookmarked Images Function ===
 function getBookmarkedImages($userId, $koneksi, $searchQuery = '')
 {
     $bookmarks = [];
 
-    // Query ditambahkan JOIN ke tabel 'login' untuk mengambil 'username'
     $query = "
         SELECT 
             i.id, 
@@ -62,14 +54,10 @@ function getBookmarkedImages($userId, $koneksi, $searchQuery = '')
         WHERE b.user_id = ?
     ";
 
-    // Tambahkan kondisi pencarian jika $searchQuery tidak kosong
     if (!empty($searchQuery)) {
-        // Mencari berdasarkan judul gambar, nama lengkap, atau username pembuat
         $query .= " AND (i.title LIKE ? OR up.nama_lengkap LIKE ? OR l.username LIKE ?)";
     }
 
-    // Asumsi tabel bookmarks Anda punya kolom 'created_at' atau 'saved_at'
-    // Ganti 'b.created_at' jika nama kolomnya berbeda
     $query .= " ORDER BY created_at DESC";
 
     $stmt = mysqli_prepare($koneksi, $query);
@@ -77,10 +65,8 @@ function getBookmarkedImages($userId, $koneksi, $searchQuery = '')
     if ($stmt) {
         if (!empty($searchQuery)) {
             $searchTerm = "%" . $searchQuery . "%";
-            // 'isss' = integer, string, string, string
             mysqli_stmt_bind_param($stmt, "isss", $userId, $searchTerm, $searchTerm, $searchTerm);
         } else {
-            // 'i' = integer
             mysqli_stmt_bind_param($stmt, "i", $userId);
         }
 
@@ -95,12 +81,3 @@ function getBookmarkedImages($userId, $koneksi, $searchQuery = '')
 
     return $bookmarks;
 }
-
-
-// Bagian AJAX handler di bawah ini bisa Anda aktifkan jika controllernya terpisah
-// Saat ini, logika AJAX Anda sepertinya ada di file bookmark_handle_controller.php, jadi bagian ini bisa tetap di-comment.
-/*
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['id'])) {
-    // ...
-}
-*/

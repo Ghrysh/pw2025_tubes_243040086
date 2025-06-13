@@ -1,15 +1,12 @@
 <?php
+// ====== Mulai Session & Koneksi Database ======
 session_start();
 require_once '../../../config/inc_koneksi.php';
 
-// Cek jika user tidak login atau bukan admin, bisa ditambahkan validasi di sini
-// if (!isset($_SESSION['id']) || $_SESSION['role'] !== 'admin') {
-//     header('Location: ../login/login.php');
-//     exit();
-// }
-
+// ====== Ambil ID User dari Session ======
 $id = (int) ($_SESSION['id'] ?? 0);
 
+// ====== Fungsi: Ambil Profil User ======
 function getProfilUser($id)
 {
     global $koneksi;
@@ -23,18 +20,19 @@ function getProfilUser($id)
     return mysqli_fetch_assoc($result);
 }
 
+// ====== Ambil Data Profil & Username ======
 $profil = getProfilUser($id);
 $username = $_SESSION['username'] ?? 'Admin';
 
-// 1. Hitung jumlah gambar
+// ====== Hitung Total Gambar ======
 $result_images = mysqli_query($koneksi, "SELECT COUNT(*) AS total FROM images");
 $total_images = mysqli_fetch_assoc($result_images)['total'];
 
-// 2. Hitung jumlah pengguna
+// ====== Hitung Total Pengguna ======
 $result_users = mysqli_query($koneksi, "SELECT COUNT(*) AS total FROM login");
 $total_users = mysqli_fetch_assoc($result_users)['total'];
 
-// 3. Hitung jumlah gambar di setiap kategori
+// ====== Hitung Jumlah Gambar per Kategori ======
 $query_kategori = "
     SELECT 
         c.name AS nama_kategori, 
@@ -56,6 +54,7 @@ if ($result_kategori) {
 <html lang="id">
 
 <head>
+    <!-- ====== Meta & Link CSS/Font ====== -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../../../public/assets/css/style_dashboard_admin.css">
@@ -71,6 +70,7 @@ if ($result_kategori) {
 </head>
 
 <body>
+    <!-- ====== Sidebar Navigasi ====== -->
     <aside class="sidebar">
         <a href="dashboard_admin.php" class="sidebar__logo">
             <img src="../../../public/assets/img/loading_logo.png" alt="MizuPix Logo">
@@ -90,6 +90,7 @@ if ($result_kategori) {
     </aside>
 
     <main class="main-content">
+        <!-- ====== Header Dashboard ====== -->
         <header class="header">
             <div class="header__title">
                 <h1>Dashboard</h1>
@@ -115,6 +116,7 @@ if ($result_kategori) {
             </div>
         </header>
 
+        <!-- ====== Statistik Utama ====== -->
         <section class="stats-grid">
             <div class="stat-card">
                 <div class="stat-card__icon" style="background-color: #E6F3FF;">
@@ -137,6 +139,7 @@ if ($result_kategori) {
             </div>
         </section>
 
+        <!-- ====== Laporan Gambar per Kategori ====== -->
         <section class="widget-container">
             <div class="card">
                 <div class="card-header">
@@ -160,8 +163,8 @@ if ($result_kategori) {
         </section>
     </main>
 
+    <!-- ====== Script Dropdown Profil ====== -->
     <script>
-        // Script untuk dropdown profil
         const profileBtn = document.querySelector('.profile-btn');
         const profileDropdown = document.querySelector('.profile-dropdown');
 

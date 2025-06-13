@@ -1,12 +1,9 @@
 <?php
+// ====== Inisialisasi & Koneksi Database ======
 require_once '../../../config/inc_koneksi.php';
-
-// PENTING: Pastikan Anda sudah meletakkan folder 'fpdf' di direktori ini
 require('fpdf/fpdf.php');
 
-// =================================================================
-// 1. AMBIL SEMUA DATA YANG DIPERLUKAN
-// =================================================================
+// ====== Query Data Statistik ======
 
 // Total Pengguna
 $result_users = mysqli_query($koneksi, "SELECT COUNT(*) AS total FROM login");
@@ -31,44 +28,31 @@ while ($row = mysqli_fetch_assoc($result_kategori)) {
     $kategori_populer[] = $row;
 }
 
-
-// =================================================================
-// 2. BUAT DOKUMEN PDF DENGAN FPDF
-// =================================================================
+// ====== Definisi Kelas PDF (FPDF) ======
 
 class PDF extends FPDF
 {
     // Header Halaman
     function Header()
     {
-        // Logo (sesuaikan path ke logo Anda)
-        // PENTING: Gunakan path relatif dari file ini
         $this->Image('../../../public/assets/img/loading_logo.png', 10, 6, 30);
-        // Font
         $this->SetFont('Arial', 'B', 15);
-        // Geser ke kanan
         $this->Cell(80);
-        // Judul
         $this->Cell(30, 10, 'Laporan Statistik MizuPix', 0, 0, 'C');
-        // Tanggal
         $this->SetFont('Arial', '', 10);
         $this->Cell(80, 10, 'Dicetak pada: ' . date('d M Y'), 0, 0, 'R');
-        // Line break
         $this->Ln(20);
     }
 
     // Footer Halaman
     function Footer()
     {
-        // Posisi 1.5 cm dari bawah
         $this->SetY(-15);
-        // Font
         $this->SetFont('Arial', 'I', 8);
-        // Nomor Halaman
         $this->Cell(0, 10, 'Halaman ' . $this->PageNo() . '/{nb}', 0, 0, 'C');
     }
 
-    // Fungsi untuk membuat Chapter Title
+    // Judul Chapter
     function ChapterTitle($title)
     {
         $this->SetFont('Arial', 'B', 12);
@@ -77,7 +61,7 @@ class PDF extends FPDF
         $this->Ln(4);
     }
 
-    // Fungsi untuk membuat isi chapter
+    // Isi Chapter
     function ChapterBody($data)
     {
         $this->SetFont('Arial', '', 12);
@@ -91,35 +75,33 @@ class PDF extends FPDF
         $this->Ln(5);
     }
 
-    // Fungsi untuk membuat tabel
+    // Tabel Laporan
     function ReportTable($header, $data)
     {
-        // Lebar kolom
         $w = array(120, 70);
-        // Header
         $this->SetFont('Arial', 'B', 12);
         for ($i = 0; $i < count($header); $i++)
             $this->Cell($w[$i], 7, $header[$i], 1, 0, 'C');
         $this->Ln();
-        // Data
         $this->SetFont('Arial', '', 12);
         foreach ($data as $row) {
             $this->Cell($w[0], 6, $row['nama_kategori'], 'LR');
             $this->Cell($w[1], 6, $row['jumlah_gambar'] . ' gambar', 'LR', 0, 'R');
             $this->Ln();
         }
-        // Garis penutup
         $this->Cell(array_sum($w), 0, '', 'T');
         $this->Ln(10);
     }
 }
 
-// Inisiasi PDF
+// ====== Inisialisasi & Pembuatan PDF ======
+
 $pdf = new PDF();
 $pdf->AliasNbPages();
 $pdf->AddPage();
 
-// KONTEN
+// ====== Konten Laporan PDF ======
+
 $pdf->ChapterTitle('Ringkasan Umum Website');
 $summary_data = [
     'Total Pengguna Terdaftar' => $total_users,
@@ -131,10 +113,6 @@ $pdf->ChapterTitle('Peringkat Kategori Terpopuler');
 $header_table = array('Nama Kategori', 'Jumlah Gambar');
 $pdf->ReportTable($header_table, $kategori_populer);
 
+// ====== Output PDF ke Browser ======
 
-// =================================================================
-// 3. OUTPUT PDF KE BROWSER
-// =================================================================
-
-// D: force download, I: inline view
 $pdf->Output('D', 'Laporan_MizuPix_' . date('Y-m-d') . '.pdf');

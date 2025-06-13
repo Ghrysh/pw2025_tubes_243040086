@@ -1,13 +1,16 @@
 <?php
+// [SESSION & KONEKSI] Inisialisasi sesi dan koneksi database
 session_start();
 require_once '../../../config/inc_koneksi.php';
 require_once '../../controller/editprofile_controller.php';
 
+// [CEK LOGIN] Redirect jika user belum login
 if (!isset($_SESSION['id'])) {
     header("Location: ../login/login.php");
     exit();
 }
 
+// [AMBIL DATA USER] Mengambil data profil dan user dari database
 $profil = getProfilUser($_SESSION['id'], $koneksi);
 $user = getUser($_SESSION['id'], $koneksi);
 $defaultPhotoPath = '/Gallery_Seni_Online/public/assets/img/profile_user/blank-profile.png';
@@ -17,6 +20,7 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
 <html lang="id">
 
 <head>
+    <!-- [HEAD] Metadata, font, icon, dan stylesheet -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Profil - MizuPix</title>
@@ -31,6 +35,7 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
 
 <body>
     <?php if (!$user): ?>
+        <!-- [ERROR PAGE] Jika data user tidak ditemukan -->
         <div class="error-page-container">
             <h2>Oops! Terjadi Kesalahan</h2>
             <p>Kami tidak dapat menemukan data profil Anda. Silakan coba login kembali.</p>
@@ -39,10 +44,12 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
     <?php else: ?>
 
         <?php
+        // [NAVBAR] Menyisipkan navbar
         include('../navbar/navbar.php');
         ?>
 
         <main class="main-container">
+            <!-- [FORM EDIT PROFIL] Formulir untuk mengedit profil user -->
             <form action="../../controller/editprofile_controller.php" method="post" enctype="multipart/form-data" class="edit-profile-card">
                 <div class="card-header">
                     <h1 class="card-title">Edit Profil</h1>
@@ -51,6 +58,7 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
 
                 <div class="form-content">
                     <div class="form-section photo-section">
+                        <!-- [FOTO PROFIL] Upload dan preview foto profil -->
                         <h2 class="form-section-title">Foto Profil</h2>
                         <label for="foto" class="photo-upload-label">
                             <img src="<?php echo $userPhoto; ?>" alt="Foto Profil" class="photo-preview" id="photoPreview">
@@ -66,17 +74,20 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
                     </div>
 
                     <div class="form-section details-section">
+                        <!-- [DETAIL PUBLIK] Input nama, bio, dan website -->
                         <h2 class="form-section-title">Detail Publik</h2>
                         <div class="form-group"><label for="nama_lengkap">Nama Lengkap</label><input type="text" id="nama_lengkap" name="nama_lengkap" value="<?php echo htmlspecialchars($profil['nama_lengkap'] ?? ''); ?>" placeholder="Masukkan nama lengkap Anda"></div>
                         <div class="form-group"><label for="tentang">Tentang Anda (Bio)</label><textarea id="tentang" name="tentang" rows="4" placeholder="Tuliskan sesuatu tentang diri Anda..."><?php echo htmlspecialchars($profil['tentang'] ?? ''); ?></textarea></div>
                         <div class="form-group"><label for="situs_web">Situs Web</label><input type="url" id="situs_web" name="situs_web" value="<?php echo htmlspecialchars($profil['situs_web'] ?? ''); ?>" placeholder="https://website-anda.com"></div>
                         <hr class="form-divider">
+                        <!-- [INFORMASI AKUN] Input username -->
                         <h2 class="form-section-title">Informasi Akun</h2>
                         <div class="form-group"><label for="username">Username</label><input type="text" id="username" name="username" value="<?php echo htmlspecialchars($user['username']); ?>" placeholder="Masukkan username unik"></div>
                     </div>
                 </div>
 
                 <div class="card-footer">
+                    <!-- [BUTTON AKSI] Tombol batal dan simpan -->
                     <a href="profile_user.php" class="btn btn-secondary">Batal</a>
                     <button type="submit" name="simpan" class="btn btn-primary">Simpan Perubahan</button>
                 </div>
@@ -84,6 +95,7 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
         </main>
 
         <script>
+            // [JAVASCRIPT UTAMA] Interaksi UI: dropdown profil, preview foto, dan pencarian
             document.addEventListener('DOMContentLoaded', function() {
                 const profileBtn = document.querySelector('.profile-btn');
                 const profileDropdown = document.getElementById('profile-menu');
@@ -94,7 +106,7 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
                 const searchWrapper = document.querySelector('.search-wrapper');
                 let searchTimeout = null;
 
-                // Dropdown profil
+                // [DROPDOWN PROFIL] Tampilkan/sembunyikan menu profil
                 if (profileBtn) {
                     profileBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
@@ -102,7 +114,7 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
                     });
                 }
 
-                // Pratinjau foto
+                // [PRATINJAU FOTO] Preview foto sebelum upload
                 if (photoInput) {
                     photoInput.addEventListener('change', function() {
                         const file = this.files[0];
@@ -116,7 +128,7 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
                     });
                 }
 
-                // --- [DIPERBAIKI] Search Logic ---
+                // [SUGGESTION SEARCH] Render dan fetch suggestion pencarian
                 const renderSuggestions = (data, container) => {
                     if (!container) return;
                     let html = '';
@@ -137,7 +149,6 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
                         data.categories.forEach(s => html += createSuggestionItem(s, 'category'));
                         html += '</div>';
                     }
-                    // ... (bisa ditambahkan grup lain seperti user atau kategori jika perlu)
                     container.innerHTML = html;
                     container.style.display = html ? 'block' : 'none';
                 };
@@ -147,30 +158,28 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
                         container.style.display = 'none';
                         return;
                     }
-                    // Pastikan Anda membuat file get_search_suggestions.php di path yang benar
                     fetch(`/Gallery_Seni_Online/app/views/user/get_search_suggestions.php?term=${encodeURIComponent(term)}`)
                         .then(res => res.json())
                         .then(data => renderSuggestions(data, container))
                         .catch(err => console.error("Fetch suggestions error:", err));
                 };
 
-                // [FUNGSI UTAMA] Fungsi ini sekarang hanya mengarahkan ke dasbor
+                // [PERFORM SEARCH] Jalankan pencarian ke dashboard
                 const performSearch = (term) => {
                     const searchTerm = term.trim();
                     if (searchTerm !== '') {
-                        // Membuat URL tujuan dan pindah halaman
                         window.location.href = `dashboard_user.php?search=${encodeURIComponent(searchTerm)}`;
                     }
                 };
 
                 if (searchInput) {
-                    // Menampilkan saran saat mengetik
+                    // [INPUT SEARCH] Tampilkan suggestion saat mengetik
                     searchInput.addEventListener('input', () => {
                         clearTimeout(searchTimeout);
                         searchTimeout = setTimeout(() => handleSearchInput(searchInput.value.trim(), suggestionsContainer), 300);
                     });
 
-                    // Menjalankan pencarian saat menekan Enter
+                    // [ENTER SEARCH] Jalankan pencarian saat enter
                     searchInput.addEventListener('keydown', (e) => {
                         if (e.key === 'Enter') {
                             e.preventDefault();
@@ -180,7 +189,7 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
                 }
 
                 if (suggestionsContainer) {
-                    // Menjalankan pencarian saat salah satu saran diklik
+                    // [CLICK SUGGESTION] Jalankan pencarian saat suggestion diklik
                     suggestionsContainer.addEventListener('click', (e) => {
                         if (e.target.classList.contains('suggestion-item')) {
                             const value = e.target.textContent.replace('@', '');
@@ -189,7 +198,7 @@ $userPhoto = !empty($profil['foto']) ? htmlspecialchars($profil['foto']) : $defa
                     });
                 }
 
-                // --- Klik di luar untuk menutup semua dropdown ---
+                // [TUTUP DROPDOWN] Klik di luar untuk menutup dropdown dan suggestion
                 document.addEventListener('click', (event) => {
                     if (profileBtn && !profileBtn.parentElement.contains(event.target)) {
                         profileDropdown.classList.remove('show');

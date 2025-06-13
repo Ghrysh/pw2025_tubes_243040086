@@ -1,8 +1,9 @@
 <?php
+// === Mulai Sesi dan Koneksi Database ===
 session_start();
 require_once '../../../config/inc_koneksi.php';
 
-// Jika tidak ada session id, redirect ke login
+// === Cek Autentikasi Admin ===
 if (!isset($_SESSION['id'])) {
     header('Location: ../login/login.php');
     exit;
@@ -12,21 +13,19 @@ $admin_id = (int)$_SESSION['id'];
 $message = '';
 $message_type = '';
 
-// === PROSES UPDATE PROFIL (USERNAME & EMAIL) ===
+// === Proses Update Profil (Username & Email) ===
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     $username = mysqli_real_escape_string($koneksi, $_POST['username']);
     $email = mysqli_real_escape_string($koneksi, $_POST['email']);
 
-    // Validasi dasar
     if (!empty($username) && !empty($email) && filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        // Cek apakah username atau email baru sudah digunakan oleh user lain
         $check_query = "SELECT id FROM login WHERE (username = '$username' OR email = '$email') AND id != $admin_id";
         $check_result = mysqli_query($koneksi, $check_query);
 
         if (mysqli_num_rows($check_result) == 0) {
             $update_query = "UPDATE login SET username = '$username', email = '$email' WHERE id = $admin_id";
             if (mysqli_query($koneksi, $update_query)) {
-                $_SESSION['username'] = $username; // Update session username
+                $_SESSION['username'] = $username;
                 $message = 'Informasi profil berhasil diperbarui.';
                 $message_type = 'success';
             } else {
@@ -43,11 +42,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     }
 }
 
-// === PROSES UPDATE FOTO PROFIL ===
+// === Proses Update Foto Profil ===
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_photo'])) {
     if (isset($_FILES['profile_photo']) && $_FILES['profile_photo']['error'] == UPLOAD_ERR_OK) {
         $upload_dir = '../../../public/uploads/profiles/';
-        // Buat direktori jika belum ada
         if (!is_dir($upload_dir)) {
             mkdir($upload_dir, 0755, true);
         }
@@ -55,11 +53,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_photo'])) {
         $file_tmp = $_FILES['profile_photo']['tmp_name'];
         $file_name = uniqid() . '-' . basename($_FILES['profile_photo']['name']);
         $file_path = $upload_dir . $file_name;
-        $db_path = '../../../public/uploads/profiles/' . $file_name; // Path untuk disimpan di DB
+        $db_path = '../../../public/uploads/profiles/' . $file_name;
 
-        // Pindahkan file yang diupload
         if (move_uploaded_file($file_tmp, $file_path)) {
-            // Hapus foto lama jika ada
             $old_photo_query = "SELECT foto FROM user_profiles WHERE user_id = $admin_id";
             $old_photo_result = mysqli_query($koneksi, $old_photo_query);
             if ($old_photo_row = mysqli_fetch_assoc($old_photo_result)) {
@@ -68,9 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_photo'])) {
                 }
             }
 
-            // Update path foto di database
             $update_photo_query = "UPDATE user_profiles SET foto = '$db_path' WHERE user_id = $admin_id";
-            // Jika user belum punya profil, buat baru
             if (mysqli_num_rows(mysqli_query($koneksi, "SELECT user_id FROM user_profiles WHERE user_id = $admin_id")) == 0) {
                 $update_photo_query = "INSERT INTO user_profiles (user_id, foto) VALUES ($admin_id, '$db_path')";
             }
@@ -92,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_photo'])) {
     }
 }
 
-// === PROSES UPDATE PASSWORD ===
+// === Proses Update Password ===
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_password'])) {
     $current_password = $_POST['current_password'];
     $new_password = $_POST['new_password'];
@@ -102,12 +96,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_password'])) {
         $message = 'Password baru dan konfirmasi password tidak cocok.';
         $message_type = 'danger';
     } else {
-        // Ambil hash password saat ini dari DB
         $pass_query = "SELECT password FROM login WHERE id = $admin_id";
         $pass_result = mysqli_query($koneksi, $pass_query);
         $admin_data = mysqli_fetch_assoc($pass_result);
 
-        // Verifikasi password saat ini
         if (password_verify($current_password, $admin_data['password'])) {
             $new_hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
             $update_pass_query = "UPDATE login SET password = '$new_hashed_password' WHERE id = $admin_id";
@@ -125,8 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_password'])) {
     }
 }
 
-
-// Ambil data terbaru untuk ditampilkan
+// === Ambil Data Admin Terbaru untuk Ditampilkan ===
 $query_admin_data = "
     SELECT l.username, l.email, up.foto 
     FROM login l
@@ -141,6 +132,7 @@ $admin_display = mysqli_fetch_assoc($result_admin_data);
 <html lang="id">
 
 <head>
+    <!-- === Meta dan Link CSS/JS === -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../../../public/assets/css/style_profile_admin.css">
@@ -156,6 +148,7 @@ $admin_display = mysqli_fetch_assoc($result_admin_data);
 </head>
 
 <body>
+    <!-- === Sidebar Navigasi Admin === -->
     <aside class="sidebar">
         <a href="dashboard_admin.php" class="sidebar__logo">
             <img src="../../../public/assets/img/loading_logo.png" alt="MizuPix Logo">
@@ -175,6 +168,7 @@ $admin_display = mysqli_fetch_assoc($result_admin_data);
     </aside>
 
     <main class="main-content">
+        <!-- === Header Profil Admin === -->
         <header class="header">
             <div class="header__title">
                 <h1>Profil Saya</h1>
@@ -183,6 +177,7 @@ $admin_display = mysqli_fetch_assoc($result_admin_data);
         </header>
 
         <?php if ($message): ?>
+            <!-- === Notifikasi Pesan === -->
             <div class="alert alert-<?php echo $message_type; ?> show">
                 <?php echo $message; ?>
             </div>
@@ -190,6 +185,7 @@ $admin_display = mysqli_fetch_assoc($result_admin_data);
 
         <div class="profile-grid-container">
             <div class="grid-item">
+                <!-- === Kartu Foto Profil === -->
                 <div class="card">
                     <div class="card-header">
                         <h3>Foto Profil</h3>
@@ -219,6 +215,7 @@ $admin_display = mysqli_fetch_assoc($result_admin_data);
             </div>
 
             <div class="grid-item">
+                <!-- === Kartu Informasi Akun === -->
                 <div class="card">
                     <div class="card-header">
                         <h3>Informasi Akun</h3>
@@ -240,6 +237,7 @@ $admin_display = mysqli_fetch_assoc($result_admin_data);
                     </div>
                 </div>
 
+                <!-- === Kartu Ubah Password === -->
                 <div class="card" style="margin-top: 2rem;">
                     <div class="card-header">
                         <h3>Ubah Password</h3>
@@ -268,6 +266,7 @@ $admin_display = mysqli_fetch_assoc($result_admin_data);
         </div>
     </main>
 
+    <!-- === Script JS untuk Interaksi Halaman Profil === -->
     <script>
         // Script untuk menampilkan nama file yang dipilih
         const actualBtn = document.getElementById('profile_photo_input');
@@ -286,7 +285,7 @@ $admin_display = mysqli_fetch_assoc($result_admin_data);
                 setTimeout(() => {
                     alertBox.style.display = 'none';
                 }, 500);
-            }, 5000); // 5 detik
+            }, 5000);
         }
     </script>
 </body>

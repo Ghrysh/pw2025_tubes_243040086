@@ -1,15 +1,13 @@
 <?php
 // --- Inisialisasi Sesi & Koneksi Database ---
 session_start();
-require_once '../../../config/inc_koneksi.php';
+require_once 'config/inc_koneksi.php';
 
-// --- Cek Cookie "Remember Me" ---
+// --- Cek Cookie Remember Me ---
 if (isset($_COOKIE['remember_me_id']) && isset($_COOKIE['remember_me_token']) && !isset($_SESSION['id'])) {
-    // (OPSIONAL LANJUTAN): Di sini Anda akan menambahkan logika untuk memvalidasi token dari database
-    // dan secara otomatis me-login user. Untuk saat ini kita biarkan sederhana.
 }
 
-// --- Penanganan Pesan Error & Sukses ---
+// --- Penanganan Error & Success ---
 $error = null;
 if (isset($_GET['error'])) {
     $error = urldecode($_GET['error']);
@@ -25,26 +23,23 @@ if (isset($_GET['success'])) {
 <html lang="id">
 
 <head>
-    <!-- --- Metadata & Resource Eksternal --- -->
+    <!-- --- Metadata & Link CSS/Font --- -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - MizuPix</title>
 
-    <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href='https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="icon" href="../../../public/assets/img/logo.png" type="image/x-icon">
-
-    <!-- Stylesheet -->
-    <link rel="stylesheet" href="../../../public/assets/css/style_login.css">
+    <link rel="icon" href="public/assets/img/logo.png" type="image/x-icon">
+    <link rel="stylesheet" href="public/assets/css/style_login.css">
 </head>
 
 <body>
     <div class="login-page-container">
 
-        <!-- --- Sisi Visual (Kiri) --- -->
+        <!-- --- Bagian Visual Kiri --- -->
         <div class="login-visual">
             <div class="visual-overlay"></div>
             <div class="visual-content">
@@ -53,12 +48,11 @@ if (isset($_GET['success'])) {
             </div>
         </div>
 
-        <!-- --- Sisi Formulir Login (Kanan) --- -->
+        <!-- --- Bagian Form Login Kanan --- -->
         <div class="login-form-wrapper">
             <div class="login-form-container">
-                <!-- --- Header Formulir --- -->
                 <div class="form-header">
-                    <img src="../../../public/assets/img/logo.png" alt="Logo Mizupix" class="logo">
+                    <img src="public/assets/img/logo.png" alt="Logo Mizupix" class="logo">
                     <h2>Selamat Datang Kembali</h2>
                     <p>Masuk untuk melanjutkan ke MizuPix.</p>
                 </div>
@@ -71,8 +65,8 @@ if (isset($_GET['success'])) {
                     </div>
                 <?php endif; ?>
 
-                <!-- --- Formulir Login --- -->
-                <form action="../../controller/login_controller.php" method="POST" class="login-form">
+                <!-- --- Form Login --- -->
+                <form action="app/controller/login_controller.php" method="POST" class="login-form">
                     <div class="form-group">
                         <label for="email">Alamat Email</label>
                         <div class="input-wrapper">
@@ -99,9 +93,9 @@ if (isset($_GET['success'])) {
                     <button type="submit" class="btn-login">Masuk</button>
                 </form>
 
-                <!-- --- Footer Formulir --- -->
+                <!-- --- Footer Form Login --- -->
                 <div class="form-footer">
-                    <p>Belum punya akun? <a href="../login/registrasi.php">Daftar di sini</a></p>
+                    <p>Belum punya akun? <a href="app/views/login/registrasi.php">Daftar di sini</a></p>
                 </div>
             </div>
         </div>

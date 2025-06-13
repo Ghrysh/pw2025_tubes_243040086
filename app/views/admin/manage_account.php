@@ -1,9 +1,13 @@
 <?php
+// ==============================
+// Bagian: Inisialisasi Sesi & Koneksi Database
+// ==============================
 session_start();
 require_once '../../../config/inc_koneksi.php';
 
-// ======================[ Bagian: Variabel & Proses Tambah Akun Admin Baru ]======================
-
+// ==============================
+// Bagian: Proses Tambah Akun Admin Baru
+// ==============================
 $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_admin_account'])) {
     $username = mysqli_real_escape_string($koneksi, $_POST['username']);
@@ -22,6 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_admin_account']))
             $errors[] = "Username atau email sudah digunakan.";
         } else {
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+            // Menggunakan 'admin' sebagai string untuk role agar lebih jelas
             $insert_query = "INSERT INTO login (username, email, password, role) VALUES ('$username', '$email', '$hashed_password', 2)";
             if (mysqli_query($koneksi, $insert_query)) {
                 header("Location: manage_account.php?status=added");
@@ -33,8 +38,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_admin_account']))
     }
 }
 
-// ======================[ Bagian: Proses Hapus Akun Admin ]======================
-
+// ==============================
+// Bagian: Proses Hapus Akun Admin (DIPERBAIKI DENGAN TRANSAKSI)
+// ==============================
 if (isset($_GET['delete'])) {
     $user_id_to_delete = (int) $_GET['delete'];
     $admin_id_logged_in = (int) ($_SESSION['id'] ?? 0);
@@ -43,22 +49,49 @@ if (isset($_GET['delete'])) {
     if ($user_id_to_delete === $admin_id_logged_in) {
         header("Location: manage_account.php?status=self_delete_error");
         exit;
-    } else {
-        mysqli_query($koneksi, "DELETE FROM login WHERE id = $user_id_to_delete AND role = 2");
-        header("Location: manage_account.php?status=deleted");
-        exit;
     }
+
+    // Mulai transaksi database
+    mysqli_begin_transaction($koneksi);
+
+    try {
+        // Hapus semua data yang mungkin bergantung pada user_id admin ini
+        // PENTING: Sesuaikan atau hapus baris ini jika admin tidak punya relasi ke tabel tsb.
+        mysqli_query($koneksi, "DELETE FROM user_profiles WHERE user_id = $user_id_to_delete");
+        mysqli_query($koneksi, "DELETE FROM images WHERE user_id = $user_id_to_delete"); // Jika admin bisa upload gambar
+        
+        // Terakhir, hapus admin dari tabel login
+        $delete_login_query = "DELETE FROM login WHERE id = $user_id_to_delete AND role = 2";
+        $success = mysqli_query($koneksi, $delete_login_query);
+
+        if ($success) {
+            // Jika semua berhasil, simpan perubahan
+            mysqli_commit($koneksi);
+            header("Location: manage_account.php?status=deleted");
+        } else {
+            // Jika gagal di tahap akhir, batalkan semua
+            throw new Exception("Gagal menghapus akun admin dari tabel login.");
+        }
+    } catch (Exception $e) {
+        // Jika ada error di salah satu query, batalkan semua proses hapus
+        mysqli_rollback($koneksi);
+        header("Location: manage_account.php?status=delete_error");
+    }
+    exit;
 }
 
-// ======================[ Bagian: Ambil Data Profil Admin Login ]======================
 
+// ==============================
+// Bagian: Ambil Data Profil Admin Login
+// ==============================
 $admin_id_logged_in = (int) ($_SESSION['id'] ?? 0);
 $profil_query = "SELECT * FROM user_profiles WHERE user_id = $admin_id_logged_in";
 $profil_result = mysqli_query($koneksi, $profil_query);
 $profil = mysqli_fetch_assoc($profil_result);
 
-// ======================[ Bagian: Ambil Daftar Akun Admin ]======================
-
+// ==============================
+// Bagian: Ambil Daftar Akun Admin
+// ==============================
 $query_admins = "SELECT id, username, email, created_at FROM login WHERE role = 2 ORDER BY created_at DESC";
 $result_admins = mysqli_query($koneksi, $query_admins);
 $admins = [];

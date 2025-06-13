@@ -1,6 +1,5 @@
 <?php
-session_start();
-require_once '../../../config/inc_koneksi.php';
+require_once '../../../config/auth_check.php';
 
 if (!isset($_SESSION['id'])) {
     header("Location: ../login/login.php");

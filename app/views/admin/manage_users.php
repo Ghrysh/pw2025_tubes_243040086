@@ -6,24 +6,63 @@ session_start();
 require_once '../../../config/inc_koneksi.php';
 
 // ==============================
-// Bagian: Proses Hapus Pengguna
+// Bagian: Proses Hapus Pengguna (DIPERBAIKI DENGAN TRANSAKSI)
 // ==============================
 if (isset($_GET['delete'])) {
     $user_id_to_delete = (int) $_GET['delete'];
+    $admin_id_logged_in = (int) ($_SESSION['id'] ?? 0);
 
     // Cegah admin menghapus akun sendiri
-    if (isset($_SESSION['id']) && $user_id_to_delete == $_SESSION['id']) {
+    if ($user_id_to_delete === $admin_id_logged_in) {
         header("Location: manage_users.php?status=self_delete_error");
         exit;
     }
 
-    // Proses hapus pengguna
-    $query_delete = "DELETE FROM login WHERE id = $user_id_to_delete";
-    mysqli_query($koneksi, $query_delete);
+    // Mulai transaksi database untuk memastikan semua data terhapus
+    mysqli_begin_transaction($koneksi);
 
-    header("Location: manage_users.php?status=deleted");
+    try {
+        // Hapus semua data yang bergantung pada user_id ini terlebih dahulu.
+        // PENTING: Sesuaikan atau hapus baris-baris ini sesuai dengan nama tabel di database Anda.
+        // Jika Anda tidak memiliki tabel comments atau likes, hapus atau beri komentar pada baris tersebut.
+        
+        // Contoh: Hapus komentar oleh pengguna
+        mysqli_query($koneksi, "DELETE FROM comments WHERE user_id = $user_id_to_delete");
+
+        // Contoh: Hapus 'likes' oleh pengguna
+        mysqli_query($koneksi, "DELETE FROM likes WHERE user_id = $user_id_to_delete");
+
+        // Hapus pesan dari pengguna
+        mysqli_query($koneksi, "DELETE FROM messages WHERE user_id = $user_id_to_delete");
+
+        // Hapus gambar milik pengguna
+        // Opsional: Anda mungkin ingin menghapus file gambar fisik dari server di sini juga.
+        mysqli_query($koneksi, "DELETE FROM images WHERE user_id = $user_id_to_delete");
+        
+        // Hapus profil pengguna
+        mysqli_query($koneksi, "DELETE FROM user_profiles WHERE user_id = $user_id_to_delete");
+
+        // Terakhir, setelah semua data terkait bersih, hapus pengguna dari tabel login
+        $delete_login_query = "DELETE FROM login WHERE id = $user_id_to_delete";
+        $success = mysqli_query($koneksi, $delete_login_query);
+
+        if ($success) {
+            // Jika semua query berhasil, simpan perubahan secara permanen
+            mysqli_commit($koneksi);
+            header("Location: manage_users.php?status=deleted");
+        } else {
+            // Jika ada satu saja yang gagal, batalkan semua perubahan
+            throw new Exception("Gagal menghapus pengguna dari tabel login.");
+        }
+    } catch (Exception $e) {
+        // Jika terjadi error di salah satu query, batalkan semua proses hapus
+        mysqli_rollback($koneksi);
+        // Anda bisa mencatat error ini untuk debugging: error_log($e->getMessage());
+        header("Location: manage_users.php?status=delete_error");
+    }
     exit;
 }
+
 
 // ==============================
 // Bagian: Ambil Profil Admin Login
@@ -37,14 +76,13 @@ $username = $_SESSION['username'] ?? 'Admin';
 // ==============================
 // Bagian: Ambil Data Seluruh Pengguna
 // ==============================
-$query_users = "SELECT id, username, email, created_at FROM login ORDER BY created_at DESC";
+$query_users = "SELECT id, username, email, created_at, role FROM login WHERE role != 'admin' ORDER BY created_at DESC";
 $result_users = mysqli_query($koneksi, $query_users);
 $users = [];
 if ($result_users) {
     while ($row = mysqli_fetch_assoc($result_users)) {
-        if ($row['id'] != $admin_id) {
-            $users[] = $row;
-        }
+        // Logika untuk tidak menampilkan admin sudah dipindah ke query SQL (WHERE role != 'admin')
+        $users[] = $row;
     }
 }
 ?>
@@ -284,3 +322,4 @@ if ($result_users) {
 </body>
 
 </html>
+

@@ -8,7 +8,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $password = $_POST['password'];
     $password_confirm = $_POST['password_confirm'];
 
-    // Validasi input
     if (!$username || !$email || !$password || !$password_confirm) {
         $error = urlencode("Mohon isi semua bidang.");
         header("Location: ../views/login/register.php?error=$error");
@@ -33,7 +32,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit;
     }
 
-    // Cek apakah email sudah terdaftar
     $stmt = $koneksi->prepare("SELECT id FROM login WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
@@ -46,11 +44,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
     $stmt->close();
 
-    // Hash password dan simpan data user
     $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
-    // Menentukan nilai untuk kolom role
-    $role = 1; // 1 untuk user, 2 untuk admin
+    $role = 1;
 
     $stmt = $koneksi->prepare("INSERT INTO login (username, email, password, role) VALUES (?, ?, ?, ?)");
     $stmt->bind_param("sssi", $username, $email, $password_hash, $role);

@@ -1,0 +1,240 @@
+/* File: style_editprofile_modern.css (Versi 1.1 - Perbaikan Live Search) */
+
+/* =================================================================== */
+/* === BAGIAN 1: GAYA DASAR (DIIMPOR DARI DASBOR) === */
+/* =================================================================== */
+
+:root {
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-primary-light: #dbeafe;
+  --color-accent: #16a34a;
+  --color-accent-hover: #15803d;
+  --color-text-main: #0f172a;
+  --color-text-secondary: #64748b;
+  --color-surface: #ffffff;
+  --color-background: #f8fafc;
+  --color-border: #e2e8f0;
+  --color-muted-bg: #f1f5f9;
+  --color-danger: #dc2626;
+  --color-danger-bg: #fee2e2;
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  font-family: "Inter", sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-text-main);
+  line-height: 1.6;
+}
+@keyframes card-appear {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* notif */
+.profile-btn {
+  position: relative;
+}
+.unread-indicator {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 9px;
+  height: 9px;
+  background-color: var(--color-danger);
+  border-radius: 50%;
+  border: 2px solid var(--color-surface);
+}
+.profile-dropdown a.notification-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  position: relative;
+}
+.profile-dropdown a i {
+  font-size: 1.2rem;
+}
+.unread-indicator-menu {
+  display: block;
+  width: 8px;
+  height: 8px;
+  background-color: var(--color-primary);
+  border-radius: 50%;
+  margin-left: auto;
+}
+.notification-link.active {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* =================================================================== */
+/* === [DIROMBAK] BAGIAN 3: GAYA HALAMAN NOTIFIKASI === */
+/* =================================================================== */
+
+.main-container {
+  padding: 2rem 1.5rem 5rem;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.page-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+.page-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+}
+.page-header p {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  margin-top: 0.25rem;
+}
+
+.notification-page-container {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem; /* Jarak antar grup waktu */
+}
+.notification-group-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.notification-list-page {
+  display: flex;
+  flex-direction: column;
+}
+.notification-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  text-decoration: none;
+  color: var(--color-text-main);
+  transition: background-color 0.2s ease;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  position: relative;
+  border-top-width: 0;
+}
+.notification-list-page .notification-item:first-child {
+  border-top-left-radius: 0.75rem;
+  border-top-right-radius: 0.75rem;
+  border-top-width: 1px;
+}
+.notification-list-page .notification-item:last-child {
+  border-bottom-left-radius: 0.75rem;
+  border-bottom-right-radius: 0.75rem;
+}
+.notification-item:hover {
+  background-color: var(--color-muted-bg);
+}
+
+.notification-icon-wrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: white;
+  font-size: 1.4rem;
+}
+.notification-icon-wrapper.type-like {
+  background-color: #ef4444;
+} /* Merah */
+.notification-icon-wrapper.type-comment {
+  background-color: #3b82f6;
+} /* Biru */
+.notification-icon-wrapper.type-follow {
+  background-color: #16a34a;
+} /* Hijau */
+
+.notification-text {
+  font-size: 0.95rem;
+  flex-grow: 1;
+  line-height: 1.5;
+}
+.notification-text strong {
+  font-weight: 600;
+}
+.notification-time {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  margin-top: 0.125rem;
+}
+.notification-target-image {
+  width: 52px;
+  height: 52px;
+  border-radius: 0.5rem;
+  object-fit: cover;
+  flex-shrink: 0;
+  margin-left: 1rem;
+}
+.unread-dot {
+  width: 10px;
+  height: 10px;
+  background-color: var(--color-primary);
+  border-radius: 50%;
+  border: 2px solid var(--color-surface);
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  transform: translate(-30%, -30%);
+}
+.notification-item.unread {
+  background-color: #eff6ff; /* blue-50, lebih subtle */
+}
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background-color: transparent;
+  border: none;
+  width: 100%;
+}
+.empty-state i {
+  font-size: 4rem;
+  color: var(--color-text-secondary);
+  opacity: 0.4;
+  margin-bottom: 1.5rem;
+}
+.empty-state h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+.empty-state p {
+  color: var(--color-text-secondary);
+  margin-top: 0.5rem;
+}
+
+/* ... (Semua CSS responsive dari file master sebelumnya) ... */
+@media (max-width: 768px) {
+  .main-container {
+    padding: 1.5rem 1rem;
+  }
+  .page-header h1 {
+    font-size: 1.75rem;
+  }
+}

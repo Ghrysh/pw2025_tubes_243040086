@@ -2,36 +2,103 @@
 session_start();
 require_once '../../../config/inc_koneksi.php';
 
+// Cek cookie "remember me" jika belum ada session
+if (isset($_COOKIE['remember_me_id']) && isset($_COOKIE['remember_me_token']) && !isset($_SESSION['id'])) {
+    // (OPSIONAL LANJUTAN): Di sini Anda akan menambahkan logika untuk memvalidasi token dari database
+    // dan secara otomatis me-login user. Untuk saat ini kita biarkan sederhana.
+}
+
+$error = null;
 if (isset($_GET['error'])) {
     $error = urldecode($_GET['error']);
+}
+
+$success = null;
+if (isset($_GET['success'])) {
+    $success = urldecode($_GET['success']);
 }
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../../../public/assets/css/style_login.css">
-    <link rel="icon" href="../../../public/assets/img/logo.png" type="image/x-icon">
     <title>Login - MizuPix</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href='https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="icon" href="../../../public/assets/img/logo.png" type="image/x-icon">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="../../../public/assets/css/style_login.css">
 </head>
 
 <body>
-    <div class="login-container">
-        <img src="../../../public/assets/img/logo.png" alt="Logo Mizupix" class="logo">
-        <h2>Wellcome to MizuPix</h2>
-        <?php if (isset($error)): ?>
-            <div class="error"><?php echo $error; ?></div>
-        <?php endif; ?>
-        <form action="../../controller/login_controller.php" method="POST">
-            <input type="email" name="email" placeholder="Email" required>
-            <input type="password" name="password" placeholder="Kata Sandi" required>
-            <button type="submit">Masuk</button>
-        </form>
-        <a class="login-link" href="registrasi.php">Belum punya akun? Daftar di sini</a>
+    <div class="login-page-container">
+
+        <!-- Sisi Visual (Kiri) -->
+        <div class="login-visual">
+            <div class="visual-overlay"></div>
+            <div class="visual-content">
+                <h1>Temukan Inspirasi Tanpa Batas</h1>
+                <p>Jelajahi jutaan gambar berkualitas tinggi dari para kreator di seluruh dunia.</p>
+            </div>
+        </div>
+
+        <!-- Sisi Form (Kanan) -->
+        <div class="login-form-wrapper">
+            <div class="login-form-container">
+                <div class="form-header">
+                    <img src="../../../public/assets/img/logo.png" alt="Logo Mizupix" class="logo">
+                    <h2>Selamat Datang Kembali</h2>
+                    <p>Masuk untuk melanjutkan ke MizuPix.</p>
+                </div>
+
+                <?php if ($error): ?>
+                    <div class="notification is-error">
+                        <i class='bx bxs-x-circle'></i>
+                        <span><?php echo htmlspecialchars($error); ?></span>
+                    </div>
+                <?php endif; ?>
+
+                <form action="../../controller/login_controller.php" method="POST" class="login-form">
+                    <div class="form-group">
+                        <label for="email">Alamat Email</label>
+                        <div class="input-wrapper">
+                            <i class='bx bx-envelope'></i>
+                            <input type="email" id="email" name="email" placeholder="contoh@email.com" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Kata Sandi</label>
+                        <div class="input-wrapper">
+                            <i class='bx bx-lock-alt'></i>
+                            <input type="password" id="password" name="password" placeholder="Masukkan kata sandi Anda" required>
+                        </div>
+                    </div>
+                    <div class="form-options">
+                        <div class="remember-me">
+                            <input type="checkbox" id="remember_me" name="remember_me" value="1">
+                            <label for="remember_me">Ingat Saya</label>
+                        </div>
+                        <div class="forgot-password-link">
+                            <a href="lupa_password.php">Lupa Password?</a>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-login">Masuk</button>
+                </form>
+
+                <div class="form-footer">
+                    <p>Belum punya akun? <a href="../login/registrasi.php">Daftar di sini</a></p>
+                </div>
+            </div>
+        </div>
+
     </div>
 </body>
 

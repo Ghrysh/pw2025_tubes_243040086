@@ -1,89 +1,270 @@
-@font-face {
-  font-family: "fantasy";
-  src: url("../fonts/zh-cn.ttf");
+:root {
+  --primary-color: #4f46e5;
+  --primary-hover: #4338ca;
+  --accent-color: #ec4899;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --bg-main: #f9fafb;
+  --bg-card: #ffffff;
+  --border-color: #e5e7eb;
+  --border-focus: var(--primary-color);
+  --error-color: #ef4444;
+  --success-color: #10b981;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  font-family: "fantasy";
-  background-image: url("../img/background_login.jpg");
-  background-repeat: no-repeat;
-  background-size: cover;
+  font-family: "Inter", "fantasy", sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+/* --- Layout Utama --- */
+.register-page-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
+  min-height: 100vh;
 }
 
-.register-container {
-  background: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  width: 320px;
-  text-align: center;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto -20px;
-  max-width: 40%;
-  height: auto;
-}
-
-h2 {
-  margin-bottom: 20px;
-  color: black;
-}
-
-input[type="email"],
-input[type="password"],
-input[type="text"] {
-  width: 92%;
-  padding: 10px;
-  margin: 10px 0;
-  border: 1px solid #1072d4;
-  border-radius: 5px;
-  font-size: 1em;
-}
-
-button {
-  background-color: #1072d4;
-  font-family: "fantasy";
+/* --- Sisi Visual (Kanan) --- */
+.register-visual {
+  flex-basis: 50%;
+  background-image: url("../img/background_login.jpg"); /* Pastikan path ini benar */
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  padding: 4rem;
   color: white;
-  border: none;
-  padding: 10px;
-  border-radius: 5px;
-  cursor: pointer;
+  order: 2; /* Sisi visual di sebelah kanan */
+}
+.visual-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  font-size: 1em;
+  height: 100%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.1));
+}
+.visual-content {
+  position: relative;
+  z-index: 2;
+  max-width: 450px;
+}
+.visual-content h1 {
+  font-size: 2.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+.visual-content p {
+  font-size: 1.1rem;
+  opacity: 0.9;
 }
 
-button:hover {
-  background-color: #00468b;
+/* --- Sisi Form (Kiri) --- */
+.register-form-wrapper {
+  flex-basis: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  order: 1; /* Sisi form di sebelah kiri */
+}
+.register-form-container {
+  width: 100%;
+  max-width: 400px;
+}
+.form-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.logo {
+  width: 70px;
+  height: auto;
+  margin-bottom: 1rem;
+}
+.form-header h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.form-header p {
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
 }
 
-.message {
-  margin: 10px 0;
-  font-size: 0.9em;
+/* --- Notifikasi Error & Success --- */
+.notification {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.8rem 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.notification i {
+  font-size: 1.25rem;
+}
+.notification.is-error {
+  background-color: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+.notification.is-success {
+  background-color: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
 }
 
-.error {
-  color: red;
+/* --- Form --- */
+.form-group {
+  margin-bottom: 1rem; /* Sedikit mengurangi margin untuk form yang lebih panjang */
 }
-
-.success {
-  color: green;
+.form-group:last-of-type {
+  margin-bottom: 1.5rem;
 }
-
-.login-link {
-  margin-top: 15px;
-  font-size: 0.9em;
+.form-group label {
   display: block;
-  color: #1072d4;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+.input-wrapper {
+  position: relative;
+}
+.input-wrapper i {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+}
+.input-wrapper input {
+  width: 100%;
+  padding: 0.8rem 1rem 0.8rem 3rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  background-color: var(--bg-main);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+.input-wrapper input:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+  background-color: #fff;
+}
+
+.btn-register {
+  width: 100%;
+  padding: 0.9rem;
+  border: none;
+  border-radius: 0.5rem;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  background-image: linear-gradient(
+    to right,
+    var(--primary-color),
+    var(--accent-color)
+  );
+  background-size: 200% auto;
+  box-shadow: 0 4px 15px 0 rgba(79, 70, 229, 0.2);
+  margin-top: 1rem;
+}
+.btn-register:hover {
+  background-position: right center;
+  transform: translateY(-2px);
+  box-shadow: 0 7px 20px 0 rgba(236, 72, 153, 0.25);
+}
+
+.form-footer {
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+.form-footer a {
+  color: var(--primary-color);
+  font-weight: 600;
   text-decoration: none;
 }
-
-.login-link:hover {
+.form-footer a:hover {
   text-decoration: underline;
+}
+
+/******************************************************
+ * BAGIAN RESPONSIVE BARU (MULAI DARI SINI)
+ ******************************************************/
+
+/* --- Tampilan Tablet (Layar di bawah 992px) --- */
+@media (max-width: 992px) {
+  .register-page-container {
+    flex-direction: column;
+  }
+
+  /* Bagian form (order: 1) akan otomatis pindah ke atas */
+  .register-form-wrapper {
+    order: 1; /* Pastikan form tetap di atas */
+    flex-grow: 1;
+    padding: 3rem 2rem;
+  }
+
+  /* Bagian visual (order: 2) akan otomatis pindah ke bawah */
+  .register-visual {
+    order: 2; /* Pastikan visual tetap di bawah */
+    flex-basis: auto;
+    min-height: 250px;
+    padding: 2rem;
+    text-align: center;
+    align-items: center;
+  }
+
+  .visual-content {
+    margin: auto;
+    max-width: 500px;
+  }
+  .visual-content h1 {
+    font-size: 2.25rem;
+  }
+}
+
+/* --- Tampilan Handphone (Layar di bawah 768px) --- */
+@media (max-width: 767px) {
+  /* Sembunyikan bagian visual sepenuhnya di mobile */
+  .register-visual {
+    display: none;
+  }
+
+  /* Atur agar bagian form mengisi seluruh layar */
+  .register-form-wrapper {
+    flex-basis: 100%;
+    /* Gunakan padding saja, tidak perlu min-height karena konten form sudah panjang */
+    padding: 2rem 1.5rem;
+    align-items: flex-start; /* Mulai dari atas di layar mobile */
+  }
+
+  .register-form-container {
+    max-width: 100%;
+  }
+
+  .form-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .form-header {
+    margin-bottom: 1.5rem;
+  }
 }

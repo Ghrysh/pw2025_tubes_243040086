@@ -1,0 +1,329 @@
+/* File: style_app.css (Versi Master Final 8.0 - Konsistensi Kartu Gambar) */
+
+/* =================================================================== */
+/* === BAGIAN 1: PONDASI & GAYA DASAR === */
+/* =================================================================== */
+
+:root {
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-primary-light: #dbeafe;
+  --color-accent: #16a34a;
+  --color-accent-hover: #15803d;
+  --color-text-main: #0f172a;
+  --color-text-secondary: #64748b;
+  --color-surface: #ffffff;
+  --color-background: #f8fafc;
+  --color-border: #e2e8f0;
+  --color-muted-bg: #f1f5f9;
+  --color-danger: #ef4444;
+  --success-bg: #f0fdf4;
+  --success-text: #15803d;
+  --success-border: #4ade80;
+  --error-bg: #fef2f2;
+  --error-text: #b91c1c;
+  --error-border: #f87171;
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  font-family: "Inter", sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-text-main);
+  line-height: 1.6;
+}
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* --- Sistem Tombol --- */
+.btn {
+  padding: 0.7rem 1.25rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  text-align: center;
+  border: 1px solid transparent;
+}
+.btn-primary {
+  background-color: var(--color-primary);
+  color: white;
+}
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+}
+.btn-secondary {
+  background-color: var(--color-muted-bg);
+  color: var(--color-text-secondary);
+  border-color: var(--color-border);
+}
+.btn-secondary:hover {
+  background-color: var(--color-border);
+  color: var(--color-text-main);
+}
+
+/* =================================================================== */
+/* === BAGIAN 3: GAYA HALAMAN & KOMPONEN SPESIFIK === */
+/* =================================================================== */
+.main-container {
+  padding: 2rem 1.5rem 5rem;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.page-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  animation: fadeInUp 0.5s ease-out;
+}
+.page-header h1 {
+  font-size: 2.25rem;
+  font-weight: 700;
+}
+.page-header p {
+  font-size: 1.1rem;
+  color: var(--color-text-secondary);
+  margin-top: 0.5rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.category-bar-wrapper {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--color-border);
+  background-color: rgba(255, 255, 255, 0.9);
+  position: sticky;
+  top: 71px;
+  z-index: 99;
+}
+.category-bar {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0 1.5rem;
+  max-width: 1280px;
+  margin: 0 auto;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.category-bar::-webkit-scrollbar {
+  display: none;
+}
+.category-button {
+  background-color: var(--color-surface);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 2rem;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+.category-button:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+.category-button.active {
+  color: var(--color-surface);
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  box-shadow: 0 4px 10px -2px var(--color-primary-light);
+}
+
+/* --- [DIPERBAIKI] Aturan Galeri & Kartu yang Konsisten --- */
+.image-gallery {
+  column-count: 4;
+  column-gap: 1.25rem;
+}
+.gallery-card {
+  break-inside: avoid;
+  margin-bottom: 1.25rem;
+  border-radius: 0.75rem;
+  background-color: var(--color-surface);
+  box-shadow: 0 1px 2px var(--color-border);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative; /* [PENTING] Agar overlay bisa diposisikan */
+  animation: fadeInUp 0.5s ease-out forwards;
+  opacity: 0;
+}
+.gallery-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px -3px #0000001a;
+}
+.gallery-image-link {
+  /* Link hanya untuk gambar */
+  display: block;
+  border-radius: 0.75rem 0.75rem 0 0;
+  overflow: hidden;
+}
+.gallery-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  background-color: var(--color-muted-bg);
+  transition: transform 0.4s ease;
+}
+.gallery-card:hover .gallery-image {
+  transform: scale(1.05);
+}
+.gallery-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  padding: 0.75rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  pointer-events: none; /* [PENTING] Biarkan klik menembus overlay */
+}
+/* [DIPERBAIKI] Aturan hover sekarang pada .gallery-card */
+.gallery-card:hover .gallery-overlay {
+  opacity: 1;
+}
+.overlay-button {
+  pointer-events: all; /* [PENTING] Buat tombol BISA diklik */
+}
+.overlay-button.unsave-btn {
+  background-color: rgba(239, 68, 68, 0.8);
+  backdrop-filter: blur(4px);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-10px);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+.gallery-card:hover .overlay-button.unsave-btn {
+  transform: translateY(0);
+  opacity: 1;
+}
+.gallery-card .card-footer {
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.author-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.author-name {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-text-main);
+}
+.author-link {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: inherit;
+}
+.author-link:hover .author-name {
+  color: var(--color-primary);
+}
+.empty-state {
+  column-span: all;
+  text-align: center;
+  padding: 4rem 2rem;
+  background-color: var(--color-surface);
+  border-radius: 1.5rem;
+  border: 2px dashed var(--color-border);
+  width: 100%;
+}
+.empty-state i {
+  font-size: 4rem;
+  color: var(--color-primary);
+  opacity: 0.5;
+  margin-bottom: 1.5rem;
+}
+.empty-state h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+.empty-state p {
+  color: var(--color-text-secondary);
+  margin-top: 0.5rem;
+  margin-bottom: 2rem;
+}
+.empty-state .btn {
+  text-decoration: none;
+}
+
+/* =================================================================== */
+/* === BAGIAN 4: RESPONSIVE === */
+/* =================================================================== */
+@media (max-width: 1280px) {
+  .image-gallery {
+    column-count: 3;
+  }
+}
+@media (max-width: 992px) {
+  .image-gallery {
+    column-count: 2;
+  }
+  .logo-text {
+    display: none;
+  }
+}
+@media (max-width: 768px) {
+  .navbar {
+    flex-wrap: wrap;
+    padding: 0.5rem 1rem;
+    gap: 0.75rem;
+  }
+  .logo-link {
+    order: 1;
+    flex-grow: 1;
+  }
+  .nav-actions {
+    order: 2;
+  }
+  .search-wrapper {
+    order: 3;
+    width: 100%;
+    flex-basis: 100%;
+    margin-top: 0.75rem;
+  }
+  .main-container {
+    padding: 1.5rem 1rem;
+  }
+  .image-gallery {
+    column-gap: 1rem;
+  }
+}
+@media (max-width: 480px) {
+  .image-gallery {
+    column-count: 1;
+  }
+}

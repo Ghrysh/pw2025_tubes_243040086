@@ -1,0 +1,369 @@
+/* File: style_detail_modern.css (Versi 1.1 - Perbaikan Ikon) */
+
+/* =================================================================== */
+/* === BAGIAN 1: GAYA DASAR (DARI DASBOR) === */
+/* =================================================================== */
+
+:root {
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-primary-light: #dbeafe;
+  --color-accent: #16a34a;
+  --color-accent-hover: #15803d;
+  --color-text-main: #0f172a;
+  --color-text-secondary: #64748b;
+  --color-surface: #ffffff;
+  --color-background: #f8fafc;
+  --color-border: #e2e8f0;
+  --color-muted-bg: #f1f5f9;
+  --color-danger: #ef4444; /* Merah untuk Like */
+  --color-danger-bg: #fee2e2;
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  font-family: "Inter", sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-text-main);
+  line-height: 1.6;
+}
+
+/* --- Tombol --- */
+.btn {
+  padding: 0.7rem 1.25rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  text-align: center;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.btn-primary {
+  background-color: var(--color-primary);
+  color: white;
+}
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+}
+
+/* =================================================================== */
+/* === BAGIAN 2: GAYA KHUSUS HALAMAN DETAIL GAMBAR === */
+/* =================================================================== */
+
+.main-container {
+  padding: 2rem 1.5rem;
+}
+.detail-card {
+  display: flex;
+  max-width: 80rem; /* 1280px */
+  min-height: 85vh;
+  margin: 0 auto 4rem auto;
+  background-color: var(--color-surface);
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.image-display-container {
+  flex: 6; /* Ambil 60% dari lebar */
+  background-color: var(--color-text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.image-display-container img {
+  max-width: 100%;
+  max-height: 85vh;
+  object-fit: contain;
+}
+
+.info-sidebar {
+  flex: 4; /* Ambil 40% dari lebar */
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+.action-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 1rem;
+}
+.header-icons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* [DIPERBAIKI] Selector untuk menargetkan ikon di header detail saja */
+.action-header .icon-button {
+  background-color: var(--color-muted-bg);
+}
+.action-header .icon-button:hover {
+  background-color: var(--color-border);
+}
+
+.save-btn.saved {
+  background-color: var(--color-accent);
+}
+.save-btn.saved:hover {
+  background-color: var(--color-accent-hover);
+}
+
+.uploader-info {
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+.author-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: inherit;
+}
+.author-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.author-text {
+  display: flex;
+  flex-direction: column;
+}
+.author-name {
+  font-weight: 600;
+}
+.author-username {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+.scrollable-content {
+  flex-grow: 1;
+  overflow-y: auto;
+  min-height: 150px;
+  padding: 1.5rem 0;
+}
+.image-info {
+  margin-bottom: 2rem;
+}
+.image-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+.image-description {
+  color: var(--color-text-secondary);
+  line-height: 1.7;
+}
+
+.comment-section h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+.comment-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.comment-item {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+.commenter-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.comment-content {
+  display: flex;
+  flex-direction: column;
+}
+.commenter-name {
+  font-weight: 600;
+  color: var(--color-text-main);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+.commenter-name:hover {
+  text-decoration: underline;
+}
+.comment-content p {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.action-footer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: auto;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-border);
+}
+.like-info {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+.like-info strong {
+  color: var(--color-text-main);
+  font-weight: 600;
+}
+.comment-form {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.my-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.comment-form input {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-muted-bg);
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+}
+.comment-form .send-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--color-primary);
+  padding: 0.5rem;
+}
+.like-btn {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: color 0.2s, transform 0.2s;
+}
+.like-btn.liked {
+  color: var(--color-danger);
+  transform: scale(1.1);
+}
+
+/* --- Recommendation Section --- */
+.recommendation-section {
+  text-align: center;
+  margin-top: 4rem;
+}
+.recommendation-section h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+}
+.image-gallery {
+  column-count: 5;
+  column-gap: 1.25rem;
+}
+.gallery-card {
+  break-inside: avoid;
+  margin-bottom: 1.25rem;
+  border-radius: 0.75rem;
+  background-color: var(--color-surface);
+  overflow: hidden;
+}
+.gallery-link {
+  display: block;
+}
+.gallery-image {
+  width: 100%;
+  display: block;
+}
+
+/* --- Toast Notification --- */
+.toast-notification {
+  visibility: hidden;
+  min-width: 250px;
+  background-color: var(--color-text-main);
+  color: #fff;
+  text-align: center;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  position: fixed;
+  z-index: 2000;
+  left: 50%;
+  bottom: 30px;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+.toast-notification.error {
+  background-color: var(--color-danger);
+}
+.toast-notification.show {
+  visibility: visible;
+  opacity: 1;
+  bottom: 50px;
+}
+
+/* --- Responsive --- */
+@media (max-width: 1024px) {
+  .image-gallery {
+    column-count: 4;
+  }
+  .detail-card {
+    flex-direction: column;
+    min-height: auto;
+  }
+  .image-display-container,
+  .image-display-container img {
+    max-height: 70vh;
+  }
+  .info-sidebar {
+    flex: auto;
+  }
+}
+@media (max-width: 768px) {
+  .main-container {
+    padding: 1rem;
+  }
+  .detail-card {
+    border-radius: 0;
+  }
+  .image-gallery {
+    column-count: 3;
+  }
+  .navbar {
+    flex-wrap: wrap;
+  }
+  .search-wrapper {
+    order: 3;
+    width: 100%;
+    flex-basis: 100%;
+    margin-top: 0.5rem;
+  }
+}
+@media (max-width: 576px) {
+  .image-gallery {
+    column-count: 2;
+  }
+}

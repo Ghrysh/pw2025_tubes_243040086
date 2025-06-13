@@ -1,0 +1,302 @@
+/* File: style_upload_modern.css (Versi 2.0 - Adaptive Frame) */
+
+/* =================================================================== */
+/* === BAGIAN 1: GAYA DASAR (DARI DASBOR) === */
+/* =================================================================== */
+
+:root {
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-primary-light: #dbeafe;
+  --color-accent: #16a34a;
+  --color-accent-hover: #15803d;
+  --color-text-main: #0f172a;
+  --color-text-secondary: #64748b;
+  --color-surface: #ffffff;
+  --color-background: #f8fafc;
+  --color-border: #e2e8f0;
+  --color-muted-bg: #f1f5f9;
+  --color-danger: #dc2626;
+  --color-danger-bg: #fee2e2;
+  --success-bg: #f0fdf4;
+  --success-text: #15803d;
+  --success-border: #4ade80;
+  --error-bg: #fef2f2;
+  --error-text: #b91c1c;
+  --error-border: #f87171;
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  font-family: "Inter", sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-text-main);
+  line-height: 1.6;
+}
+@keyframes card-appear {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =================================================================== */
+/* === BAGIAN 2: GAYA KHUSUS HALAMAN UNGGAH GAMBAR === */
+/* =================================================================== */
+
+.main-container {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+}
+
+.upload-card {
+  background-color: var(--color-surface);
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.05);
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 64rem; /* 1024px */
+  animation: card-appear 0.5s ease-out forwards;
+}
+
+.card-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.card-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+.card-subtitle {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  margin-top: 0.25rem;
+}
+
+.upload-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+}
+
+/* --- [DIUBAH] Area Unggah Gambar Adaptif --- */
+.image-upload-label {
+  cursor: pointer;
+}
+.image-upload-frame {
+  border: 2px dashed var(--color-border);
+  border-radius: 0.75rem;
+  display: flex; /* Hanya untuk placeholder */
+  justify-content: center; /* Hanya untuk placeholder */
+  align-items: center; /* Hanya untuk placeholder */
+  overflow: hidden;
+  background-color: var(--color-background);
+  transition: all 0.2s ease;
+  width: 100%;
+  height: 100%; /* Biarkan tinggi mengikuti flex container */
+  min-height: 350px; /* Tinggi minimal saat kosong */
+  position: relative;
+}
+.image-upload-frame:hover,
+.image-upload-frame.is-dragging {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-light);
+}
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: var(--color-text-secondary);
+  padding: 1rem;
+}
+.upload-icon {
+  color: var(--color-primary);
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+.placeholder-text-main {
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+.placeholder-text-secondary {
+  font-size: 0.9rem;
+}
+.placeholder-text-format {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  margin-top: 0.5rem;
+}
+.img-preview {
+  display: none;
+  width: 100%;
+  height: auto; /* KUNCI: Membuat gambar menjaga rasio aspek */
+  border-radius: 0.75rem;
+}
+
+/* --- [DIUBAH] Logika saat gambar dipilih --- */
+.image-upload-frame.has-image {
+  min-height: auto; /* Hapus tinggi minimal */
+  height: auto; /* Biarkan container mengikuti tinggi gambar */
+  border: 1px solid var(--color-border);
+  background-color: var(--color-muted-bg);
+  display: block; /* Ubah dari flex ke block */
+  padding: 0.25rem; /* Beri sedikit padding di sekitar gambar */
+}
+.image-upload-frame.has-image .upload-placeholder {
+  display: none;
+}
+.image-upload-frame.has-image .img-preview {
+  display: block;
+}
+input[type="file"] {
+  display: none;
+}
+
+/* --- Form Inputs --- */
+.form-right {
+  display: flex;
+  flex-direction: column;
+}
+.form-group {
+  margin-bottom: 1.5rem;
+}
+.form-right label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+.form-right input[type="text"],
+.form-right textarea,
+.form-right select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  background-color: var(--color-surface);
+  font-size: 1rem;
+  font-family: "Inter", sans-serif;
+  transition: all 0.2s ease;
+}
+.form-right input[type="text"]:focus,
+.form-right textarea:focus,
+.form-right select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+textarea {
+  resize: vertical;
+}
+
+/* Custom Select Dropdown */
+.select-wrapper {
+  position: relative;
+}
+.select-wrapper::after {
+  content: "\ea4a";
+  font-family: "Boxicons";
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--color-text-secondary);
+}
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding-right: 2.5rem;
+}
+
+/* --- Tombol & Pesan Status --- */
+.btn {
+  padding: 0.8rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  text-align: center;
+  border: 1px solid transparent;
+}
+.btn-primary {
+  background-color: var(--color-primary);
+  color: white;
+}
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+}
+.btn-full {
+  width: 100%;
+  margin-top: auto;
+}
+
+.status-message-wrapper {
+  margin-bottom: 1.5rem;
+}
+.success,
+.error {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  border-left: 4px solid;
+}
+.success {
+  background-color: var(--success-bg);
+  color: var(--success-text);
+  border-color: var(--success-border);
+}
+.error {
+  background-color: var(--error-bg);
+  color: var(--error-text);
+  border-color: var(--error-border);
+}
+
+/* --- Responsive --- */
+@media (max-width: 1024px) {
+  .upload-form {
+    grid-template-columns: 1fr;
+  }
+  .upload-card {
+    padding: 2rem;
+  }
+}
+@media (max-width: 768px) {
+  .main-container {
+    padding: 1.5rem 1rem;
+  }
+  .upload-card {
+    padding: 1.5rem;
+  }
+  .card-title {
+    font-size: 1.5rem;
+  }
+  .card-subtitle {
+    font-size: 1rem;
+  }
+  .navbar {
+    flex-wrap: wrap;
+  }
+  .search-wrapper {
+    order: 3;
+    width: 100%;
+    flex-basis: 100%;
+    margin-top: 0.5rem;
+  }
+}

@@ -1,0 +1,170 @@
+/* File: style_followers_modern.css (Versi 1.0) */
+
+/* =================================================================== */
+/* === BAGIAN 1: GAYA DASAR (DARI DASBOR) === */
+/* =================================================================== */
+
+:root {
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-primary-light: #dbeafe;
+  --color-accent: #16a34a;
+  --color-accent-hover: #15803d;
+  --color-text-main: #0f172a;
+  --color-text-secondary: #64748b;
+  --color-surface: #ffffff;
+  --color-background: #f8fafc;
+  --color-border: #e2e8f0;
+  --color-muted-bg: #f1f5f9;
+  --color-danger: #dc2626;
+  --color-danger-bg: #fee2e2;
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  font-family: "Inter", sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-text-main);
+  line-height: 1.6;
+}
+
+.btn {
+  padding: 0.6rem 1.25rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  text-align: center;
+  border: 1px solid transparent;
+}
+.btn-primary {
+  background-color: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+.btn-secondary {
+  background-color: var(--color-muted-bg);
+  color: var(--color-text-secondary);
+  border-color: var(--color-border);
+}
+.btn-secondary:hover {
+  background-color: var(--color-border);
+  color: var(--color-text-main);
+}
+
+/* =================================================================== */
+/* === BAGIAN 2: GAYA KHUSUS HALAMAN FOLLOWERS === */
+/* =================================================================== */
+
+.main-container {
+  max-width: 768px; /* Layout lebih sempit, cocok untuk daftar */
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+}
+.page-header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+.profile-tabs {
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  gap: 1.5rem;
+}
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 0.75rem 0;
+  margin-bottom: -1px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+.tab-btn.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.user-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.user-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  transition: box-shadow 0.2s ease;
+}
+.user-list-item:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.05);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-decoration: none;
+  color: inherit;
+}
+.user-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.user-text {
+  display: flex;
+  flex-direction: column;
+}
+.user-name {
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+.user-username {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+.list-empty-message {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: var(--color-text-secondary);
+  background-color: var(--color-surface);
+  border: 1px dashed var(--color-border);
+  border-radius: 0.75rem;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .main-container {
+    padding: 0 1rem;
+    margin-top: 1.5rem;
+  }
+}

@@ -1,0 +1,122 @@
+body {
+  font-family: "Segoe UI", sans-serif;
+  margin: 0;
+  background: #ffffff;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  background: #ffffff;
+  padding: 1em 2em;
+  color: rgb(82, 82, 82);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.user-icon {
+  font-size: 1.5em;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+}
+
+.logo img {
+  width: 50px;
+  height: auto;
+  cursor: pointer;
+  display: block;
+}
+
+.sidebar {
+  background: #ffffff;
+  color: rgb(175, 175, 175);
+  width: 200px;
+  height: 100vh;
+  position: fixed;
+  top: 60px;
+  left: 0;
+  padding-top: 1em;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 40px; /* sedikit kebawah */
+  margin-left: 30px; /* sedikit geser ke kanan */
+}
+
+.sidebar li {
+  padding: 1em;
+}
+
+.sidebar a {
+  color: rgb(117, 117, 117);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.container {
+  margin-left: 200px;
+  padding: 100px 2em 2em;
+}
+
+.admin-form {
+  max-width: 500px;
+  margin-top: 2em;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+.admin-form label {
+  font-weight: bold;
+}
+
+.admin-form input {
+  padding: 0.5em;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.admin-form button {
+  background: #0077cc;
+  color: white;
+  padding: 0.7em;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.admin-form button:hover {
+  background: #005fa3;
+}
+
+.user-table {
+  width: 100%;
+  margin-top: 2em;
+  border-collapse: collapse;
+}
+
+.user-table th,
+.user-table td {
+  padding: 0.8em;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.user-table th {
+  background-color: #f5f5f5;
+}
